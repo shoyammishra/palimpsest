@@ -31,3 +31,16 @@ PolyPythias (ICLR 2025, arXiv:2503.09543): 45 runs varying seed and data order o
 
 ### Citation hygiene flags (from agent, re-verify before writing)
 SISA (IEEE S&P 2021), certified removal (Guo, ICML 2020), Model Soups (ICML 2022), EWC (PNAS 2017) — cited from memory by the agent, not re-verified this scan.
+
+## F-002 (2026-07-17) — Sweeney (arXiv:2606.24993) does NOT tie its Lie-bracket to transport cost; Q2's delta survives
+
+Source: principal engineer, targeted full-text check of the arXiv HTML (three probes: abstract, full-body semantic search, exhaustive keyword sweep). This resolves the specific kill-check flagged when picking a new core: "does Sweeney's invariant predict anything about the cost of moving between endpoints, or only which order is better?"
+
+**Answer: order only.** Evidence:
+- The bracket is used exclusively to (a) predict pairwise transfer direction (which order A→B vs B→A yields lower target loss), (b) rank many-domain curricula via tournament Borda scoring, (c) estimate stakes/confidence of order decisions.
+- Keyword sweep over the full text incl. appendices: "transport", "holonomy", "budget", "effort", "reversib-/irreversib-", "undo", "repair" **never appear**. All "cost" usages concern the planner's own runtime (gradient/HVP counts vs. brute-force order trials). "Recover" appears only as "recovered fraction" (task-performance metric).
+- Notable correction to F-001's characterization: the paper never uses the word "holonomy" at all. Its quantity is the *local, first-order* Lie-bracket commutator with k-step lookahead — not an accumulated path invariant. The delta to our Q2 (accumulated holonomy → minimum transport cost between endpoints) is therefore *wider* than the kill-scan implied.
+
+**Implication for the core pick**: Q2 (transport-cost ≥ f(accumulated holonomy) invariant) survives its designated kill-check. Sweeney remains a citation and a special case to subsume, not an occupant of the question.
+
+**Caveat**: this was a targeted check via summarizer-assisted fetches against the full text — strong for this narrow question, but it does not discharge D-008's requirement of an end-to-end principal read of both gating papers (full Sweeney delta log + Yu/Arora carve-out check still pending before the gate finalizes).
