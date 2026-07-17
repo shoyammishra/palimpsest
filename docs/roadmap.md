@@ -6,14 +6,13 @@ Started: 2026-07-17. Target venue: NeurIPS / ICML / ICLR (or explicit, well-argu
 ## M0 — Project scaffold ✅ 2026-07-17
 Repo structure, CLAUDE.md, docs/, verbatim spec preserved, git initialized.
 
-## M1 — Novelty verification (HARD GATE — highest priority, in progress)
-No experiments and no compute until this gate resolves.
+## M1 — Novelty verification (HARD GATE) ✅ 2026-07-17 — verdict: REFORMULATE, core = Q2 (D-009)
 
-- M1.1 **Kill-scan** (in flight, delegated to Opus 4.8): targeted search for papers that already answer the core question — "rewrite optimization history without data replay," "SGD path-integrability," holonomy/curvature/non-commutativity of SGD updates, weight-space transport between training runs. Output: closest-work list + three probability estimates (already answered / seen as incremental / hidden overlap) + verdict.
-- M1.2 **Exhaustive adjacent-literature map** (only if kill-scan verdict is "survives"): map all ~35 literatures named in the spec; per cluster: closest 3–5 papers, what they claim, precise delta to our question.
-- M1.3 **Gate decision** logged in docs/decision_log.md: PROCEED / REFORMULATE (find the deeper surviving question) / ABANDON.
+- M1.1 **Kill-scan** ✅ (Opus 4.8 subagent; F-001): three surviving questions, two gating papers identified.
+- M1.2 **Exhaustive adjacent-literature map** — superseded by the REFORMULATE verdict: the exhaustive ~35-literature sweep of the *original* framing is no longer the right object. A *targeted* adjacent map for the reformulated core (holonomy/transport-cost) folds into M2; citation-hygiene items from F-001/F-003 (SISA, certified removal, Model Soups, EWC, Rukhovich 2501.15556) get re-verified during M5 writing.
+- M1.3 **Gate decision** ✅ — principal read both gating papers end-to-end (F-003 Sweeney, F-004 Yu/Arora); both kill-checks passed; final verdict D-009: REFORMULATE around the holonomy→transport-cost invariant (Q2 core, Q1 machinery, Q3 ablation).
 
-Deliverable: novelty section of the final report (items 1–4 of spec's Expected Output), written to docs/findings.md.
+Deliverable status: novelty evidence logged in docs/findings.md (F-001..F-004); prose novelty section drafted in M5 from those entries.
 
 ## M2 — Formal framework (after M1 gate passes)
 - Formal problem statement: history space 𝓗, training map Φ, equivalence classes, transport operator T, budget constraints (no data replay, compute ≪ retraining), functional (generalization-based) success metric.

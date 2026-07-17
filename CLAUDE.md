@@ -1,10 +1,10 @@
 # Palimpsest — Optimization Path Integrability in Deep Neural Networks
 
 ## Active Context
-- Status: In Progress
-- Current task: M1.3 gate finalization — deep-read the two gating papers (Sweeney arXiv:2606.24993 ICML 2026; Yu/Arora arXiv:2510.16629), log deltas, then finalize the provisional REFORMULATE verdict (F-001, D-008) and pick among the three surviving questions
-- Key files: docs/findings.md (F-001 verdict + surviving questions), docs/decision_log.md (D-008), docs/design.md (needs revision after gate finalizes), docs/research_spec.md
-- Open questions: Does Yu/Arora's impossibility leave room for a history-aware transport operator? Does Sweeney's Lie-bracket work leave the holonomy→transport-cost invariant open? Which of the three surviving questions (F-001) becomes the core?
+- Status: In Progress — M1 gate CLOSED (D-009: REFORMULATE final, core = Q2 holonomy→transport-cost invariant; Q1 = machinery, Q3 = ablation axis). Both gating papers read end-to-end by principal (F-003, F-004); both kill-checks passed.
+- Current task: M2 formal framework — first deliverable: choose and justify the discretization of the accumulated-holonomy functional 𝓚 (candidates (a)–(c) in design.md §2) and prove/argue it is well-defined off the quadratic regime; then sharpen TransportCost and the target inequality.
+- Key files: docs/design.md (v0.2 — core question, definitions, binding positioning constraints §5), docs/findings.md (F-001..F-004), docs/decision_log.md (D-009), docs/research_spec.md
+- Open questions: which 𝓚 discretization (bracket-norm sum vs target-projected vs ordered-exponential mismatch)? What is the minimal side-information class 𝓘 for the first transport pilots? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
 
 ## Conventions
 - Read-first order: CLAUDE.md → docs/roadmap.md → docs/design.md → whatever Active Context points at.

@@ -44,3 +44,43 @@ Source: principal engineer, targeted full-text check of the arXiv HTML (three pr
 **Implication for the core pick**: Q2 (transport-cost ≥ f(accumulated holonomy) invariant) survives its designated kill-check. Sweeney remains a citation and a special case to subsume, not an occupant of the question.
 
 **Caveat**: this was a targeted check via summarizer-assisted fetches against the full text — strong for this narrow question, but it does not discharge D-008's requirement of an end-to-end principal read of both gating papers (full Sweeney delta log + Yu/Arora carve-out check still pending before the gate finalizes).
+**Superseded 2026-07-17 (same day):** the end-to-end principal read is now done — see F-003, which confirms and extends this finding.
+
+## F-003 (2026-07-17) — Sweeney (arXiv:2606.24993) end-to-end read: full delta log
+
+Source: principal engineer, complete read of the paper (main body + appendices A–E) from the arXiv HTML full text. Discharges the Sweeney half of D-008's deep-read requirement.
+
+### What the paper actually is
+A **prospective order planner**. Core object: the local Lie-bracket vector b_AB = H_B g_A − H_A g_B at θ₀ (second-order BCH leading term of θ_AB − θ_BA for two gradient steps, Lemma 2.1). Directional score σ = ⟨g_E, b_AB⟩ predicts which order (A→B vs B→A) gives lower target loss (Prop 2.3); a drift-matched "Trotter" reference θ_ref = θ₀ − η(g_A+g_B) reduces the error to O(η⁴) on the target-gradient side (Prop 2.5). Scales to N domains via a Borda/row-sum "Lie-Bracket Tournament" (one HVP per source). Validated on SFT/DPO/Pile-domain/diffusion; accuracy decays from 93% (k=1) to 65.3% (k=50) as the θ₀-local bracket loses validity along the trajectory.
+
+### Confirmed deltas (each is a boundary of Sweeney's claims, verified against the full text)
+1. **Local, not accumulated.** Every quantity is evaluated at θ₀ (or θ_ref, O(η) away). There is no integrated/accumulated bracket along a trajectory, no path invariant, no curvature-of-connection formalism. Their own long-horizon decay (Table 3) is *evidence that a θ₀-local quantity is insufficient* — they leave the accumulated object unbuilt. Our Q2 invariant (accumulated holonomy) starts exactly where their theory stops.
+2. **Prospective, not retrospective.** The planner chooses an order *before* training. Nothing in the paper takes two *completed* histories and relates them — no transport, no reconciliation, no cost of moving between endpoints (confirms F-002 by direct read).
+3. **Closest overlap — Appendix E.8 "bracket-control": must cite and delimit.** They take one correction step θ_ctrl = θ_ref − 0.5·sign(σ̂)·η²b_AB and beat the uncorrected shared-drift point in 87.7% of cases (beats both sequential endpoints in only 46.6%). This is a *single infinitesimal control step at planning time in the k=1 two-step setting* — not endpoint-to-endpoint transport between full histories. But it is the paper's one gesture toward "bracket direction as a repair direction," so our related-work section must name it and state the difference precisely, or a reviewer will.
+4. **Q3 adjacency — Appendix D.7:** the SGD-derived bracket fails under AdamW (47.7% at k=5, i.e. below chance), and they *name* "an augmented-state commutator on (θ, m, v)" as the correct object, explicitly deferred as future work. This is the seed of our Q3 (optimizer taxonomy) held by someone else as a stated intention: Q3 as a *standalone* core is now riskier (a Sweeney follow-up likely exists in the pipeline), which further supports Q2-as-core with Q3 demoted to an ablation axis.
+5. **Prior art we didn't have:** Rukhovich, Podolskiy, Piontkovskaya (arXiv:2501.15556, 2025) introduced the same bracket-projection ⟨g_E, b_AB⟩ as a descriptive local optimality criterion before Sweeney. Add to citation map. Also Sweeney (ICML 2026) "The geometry of updates: Fisher alignment at vocabulary scale" — same author, adjacent geometry.
+
+### Correction to F-001
+F-001 described Sweeney as claiming "the Lie-bracket/holonomy framing." The word holonomy never appears; the framing is strictly the local commutator. The mathematical territory Sweeney occupies is narrower than the kill-scan implied; the delta for an accumulated-holonomy → transport-cost invariant is wide and clean.
+
+## F-004 (2026-07-17) — Yu/He/Goyal/Arora (arXiv:2510.16629) end-to-end read: the history-aware carve-out HOLDS
+
+Source: principal engineer, complete read (main body + proof appendix C + ablations H) from the arXiv HTML full text. Discharges the Yu/Arora half of D-008's deep-read requirement.
+
+### What the theorem actually proves (and what it doesn't)
+Setting: overparametrized linear regression, two-stage ridge training regularized toward the previous iterate; unlearning = gradient **ascent** on the forget set S_U. Theorem 3.1: the weight difference between the two order-variants evolves as Δθ_t = (I+M_U)^t Δθ₀ with M_U = (2η/k)X_UᵀX_U ⪰ 0, so the *functional* RE-distance between the two models diverges exponentially in unlearning steps t (rate: Rayleigh quotient ρ★ of M_U on the projected difference). Corollary: both models cannot simultaneously reach the retrained target — Retrain Equivalence is ill-posed for this operator class. Empirics: same divergence + recency effect + path-dependent superficial-vs-deep forgetting, Llama/Qwen 1B–14B, GA/NPO/SimNPO.
+
+The operator class killed is precisely: **local** (Def 2.2 — updates depend only on gradients computed on the forget set) **and path-oblivious** (the same rule applied to both histories). The impossibility is that one shared rule cannot serve two histories — the theorem lower-bounds the divergence *between the two unlearned models*, not the error of a history-adapted rule.
+
+### Why our operator class survives (the carve-out, now verified line-by-line)
+1. **Explicit scope disclaimer** (§1): "Our work does not discuss the hardness of retrain equivalence for unlearning schemes that (i) use retain-set information, (ii) modify the training process to enable future unlearning, or (iii) rely on certified procedures with stronger assumption of model or data access." History-aware operators with declared side-information are outside the theorem by the authors' own fence.
+2. **The impossibility triangle** (§5): path-independence / retrain equivalence / locality — "at most two out of the three." They pursue forgoing RE; forgoing *path-independence* (our direction: an operator that knows and uses the history) is named as the other branch and left entirely unexplored. Our core question is literally "what is the minimum budget at which the third vertex becomes affordable" — their frame, our gap.
+3. **Mechanism gift — the off-span invariant.** In their proof, the component (I−P_U)Δθ₀ orthogonal to span(X_U) is *untouched* by any number of local unlearning steps. That is a crisp, provable instance of "path-burned relative to an operator's data access": history differences invisible to the accessible span can never be corrected from within it. Our path-burned definition should generalize exactly this (accessible span → declared side-information/budget), and our transport-cost lower bound should reduce to their divergence result as a special case. This makes Q2's inequality *strictly containing* their theorem a concrete, checkable target.
+4. **Divergence mechanism is ascent-specific.** The exponential rate comes from (I+M_U)^t with M_U ⪰ 0 — gradient *ascent* is expansive. A transport operator is not doing ascent; nothing in the proof machinery constrains a contractive, history-conditioned map. (Any positive result must still respect their triangle honestly: declare side-information, show compute ≪ retraining, or reviewers will correctly say "you retrained.")
+5. **Their functional metric = our D-006 metric.** RE-distance is defined on predictions over a test set, not parameter distance — our functional-equivalence convention is aligned with the standard this literature already uses.
+
+### Open questions they pose that we partially answer
+§5 asks: "is there any way to distinguish path-induced behavior from algorithm-induced behavior?" A holonomy→transport-cost invariant is a quantitative answer candidate — cite this sentence as the hook.
+
+### Net verdict input
+Both gating papers read end-to-end. Sweeney: order prediction only; local bracket; no accumulated invariant, no transport, no cost (F-002/F-003). Yu/Arora: impossibility confined to local+path-oblivious; history-aware budgeted transport explicitly out of scope and named-but-unexplored; proof yields a special case our invariant should subsume. **Q2 (transport-cost ≥ f(accumulated holonomy)) survives both kill-checks with a clean, citable delta.** Gate finalization logged as D-009.
