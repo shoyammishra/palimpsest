@@ -37,6 +37,21 @@ Format per entry: problem, options, choice, why, trade-offs, how to reverse.
 - **Why**: Never leave state uncommitted; enables honest history of the research process.
 - **Reverse**: n/a.
 
+## D-008 (2026-07-17) — M1.3 gate: provisional REFORMULATE; deep-read of gating papers required before finalizing
+- **Problem**: Kill-scan (F-001) says the broad framing ("holonomy of training order" + "impossibility of reconciling staged histories") is occupied by Sweeney ICML 2026 and Yu/Arora 2025, but three questions survive.
+- **Options**: (a) PROCEED with original framing; (b) ABANDON; (c) REFORMULATE around the surviving questions (transport-operator phase boundary; holonomy→transport-cost invariant; conservativeness-reversibility taxonomy).
+- **Choice**: (c), PROVISIONAL — not final until arXiv:2606.24993 and arXiv:2510.16629 are read end-to-end by the principal and deltas logged. A gate decision must not rest on a subagent's secondhand summary.
+- **Why**: P(incremental)≈0.65 kills (a); three verified gaps and a ready testbed (PolyPythias) argue against (b).
+- **Trade-off**: reformulation narrows scope and hard-requires the Yu/Arora carve-out (history-aware operator class) plus off-NTK-regime evidence.
+- **Reverse**: superseding entry after the deep read — may upgrade to final REFORMULATE with a chosen question, or downgrade to ABANDON if the deep read shows the carve-outs don't hold.
+
+## D-007 (2026-07-17) — Project name: "Palimpsest"
+- **Problem**: Working name "fable" was a placeholder; folder name "path dnn" contained a space.
+- **Options**: Palimpsest, Holonomy, Monodromy, Rewind.
+- **Choice**: Palimpsest; folder renamed to `palimpsest`.
+- **Why**: Captures the core object — final weights as an overwritten record of training history with partially recoverable traces — and covers both the information-theoretic and geometric framings; "Holonomy" would over-commit to one math handle before the M1 verdict.
+- **Reverse**: rename folder + title lines; no code depends on the name.
+
 ## D-006 (2026-07-17) — Success metric is functional/generalization gap, not parameter distance
 - **Problem**: Parameter-space closeness is confounded by permutation/scaling symmetries and is not the scientific target.
 - **Choice**: All transport/integrability claims measured functionally (generalization behavior), with degenerate-strategy baselines mandatory.

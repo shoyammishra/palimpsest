@@ -1,10 +1,10 @@
-# Fable — Optimization Path Integrability in Deep Neural Networks
+# Palimpsest — Optimization Path Integrability in Deep Neural Networks
 
 ## Active Context
 - Status: In Progress
-- Current task: M1 novelty verification — kill-scan literature review (delegated to Opus, in flight); on return, write verdict to docs/findings.md and decide proceed/reformulate/abandon
-- Key files: docs/research_spec.md, docs/roadmap.md, docs/design.md, docs/decision_log.md, docs/findings.md
-- Open questions: Has "rewriting optimization history without data replay" / "SGD path-integrability" already been answered in the literature? (M1 gate — no experiments until resolved)
+- Current task: M1.3 gate finalization — deep-read the two gating papers (Sweeney arXiv:2606.24993 ICML 2026; Yu/Arora arXiv:2510.16629), log deltas, then finalize the provisional REFORMULATE verdict (F-001, D-008) and pick among the three surviving questions
+- Key files: docs/findings.md (F-001 verdict + surviving questions), docs/decision_log.md (D-008), docs/design.md (needs revision after gate finalizes), docs/research_spec.md
+- Open questions: Does Yu/Arora's impossibility leave room for a history-aware transport operator? Does Sweeney's Lie-bracket work leave the holonomy→transport-cost invariant open? Which of the three surviving questions (F-001) becomes the core?
 
 ## Conventions
 - Read-first order: CLAUDE.md → docs/roadmap.md → docs/design.md → whatever Active Context points at.

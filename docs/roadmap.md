@@ -1,6 +1,6 @@
 # Roadmap
 
-Project: Optimization Path Integrability in Deep Neural Networks ("Fable")
+Project: Optimization Path Integrability in Deep Neural Networks ("Palimpsest")
 Started: 2026-07-17. Target venue: NeurIPS / ICML / ICLR (or explicit, well-argued abandonment — a negative verdict is a valid deliverable per the spec).
 
 ## M0 — Project scaffold ✅ 2026-07-17
