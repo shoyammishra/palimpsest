@@ -84,3 +84,20 @@ The operator class killed is precisely: **local** (Def 2.2 — updates depend on
 
 ### Net verdict input
 Both gating papers read end-to-end. Sweeney: order prediction only; local bracket; no accumulated invariant, no transport, no cost (F-002/F-003). Yu/Arora: impossibility confined to local+path-oblivious; history-aware budgeted transport explicitly out of scope and named-but-unexplored; proof yields a special case our invariant should subsume. **Q2 (transport-cost ≥ f(accumulated holonomy)) survives both kill-checks with a clean, citable delta.** Gate finalization logged as D-009.
+
+## F-005 (2026-07-19) — Derived: momentum makes training-order defects first-order in η (SGD: second-order); formal seed of H4
+
+Source: principal engineer, theory work (docs/theory.md, Lemma K-4b — PROVED by direct computation, no experiment).
+
+For EMA momentum (m⁺ = βm + (1−β)g, θ⁺ = θ − ηm⁺), the exact leading-order swap defect of two updates a, b is δ^θ = ηβ(1−β)(g_a − g_b) + O(η²) and δ^m = (1−β)²(g_a − g_b) + O(η). At β = 0 the η-term vanishes and plain SGD's classical Θ(η²) bracket order is recovered; for any β > 0 the order defect is **Θ(η) — one full order larger**. The optimizer state remembers order at O(1), decays geometrically (factor β/step), and leaks into θ at O(η)/step. The argument extends to any C¹ state readout (Adam's normalization; sketch level).
+
+**Why it matters**: (1) this *derives* what Sweeney arXiv:2606.29554 reported empirically ("Adam's moment buffers make batch order a first-order noise source") — our framework produces their observation as a two-line corollary, evidence the formalism carves reality at a joint; (2) it is the formal seed of H4 (optimizer stratification): per inversion, momentum-class optimizers accumulate holonomy one order of η more than SGD — a quantitative, testable gap prediction for M3/M4. Caveat: leading-order statement on the regularity tube; Adam constant-tracking deferred (theory.md K-4d).
+
+## F-006 (2026-07-19) — Proved: path-burned floor for fixed-subspace access classes (target inequality exact in that case); 𝓚 measurable from a single run
+
+Source: principal engineer, theory work (docs/theory.md, Proposition P-1 — PROVED; Corollary K-3.1 — sketch-level).
+
+1. **P-1 (proved, two lines, linear predictors)**: for any operator class whose total displacement lies in a fixed subspace S (any compute), TransportCost(H₁→H₂; 𝒯_S, ε) = ∞ for every ε below dist_{Σ_E}(Σ_k Δ_k, S) — the functionally irreducible residual. This (a) makes the v0.2 target inequality *exact* for fixed-subspace classes, (b) fixes the definition of the path-burned mass as a projection **distance** (not the naive orthogonal component — reachable motion can partially compensate off-span functional effects when Σ_E mixes subspaces), and (c) contains Yu/Arora's off-span invariance as the instance S = rowspace(X_U) (Lemma K-5a, proved). The frontier moves to state-dependent (conic) reachable sets.
+2. **Corollary K-3.1 (sketch)**: the full inversion-indexed attribution of the endpoint gap is computable from **H₁'s trajectory alone** (checkpoints + two map evaluations per pair + one JVP chain) up to O(KTη³) error — 𝓚 is a single-run instrument, not a thought experiment requiring intermediate retraining. This sets the M3.1 pilot design: one instrumented run + branched-replay spot checks as the validation gate.
+
+Caveats travel with both: K-2/K-3 error constants are geometric in tail length (absolute-error bounds; relative error uncontrolled when the tail nearly annihilates a defect), so the branched-replay validation gate of design.md §2.2 is binding before any 𝓚 number is trusted.

@@ -1,10 +1,10 @@
 # Palimpsest — Optimization Path Integrability in Deep Neural Networks
 
 ## Active Context
-- Status: In Progress — M2 underway. First M2 deliverable DONE (D-010): 𝓚 discretization fixed as the transported-defect (exact telescoping) form, well-defined off the quadratic regime by construction; TransportCost sharpened with reachable-span projection; target inequality v0.2 stated (design.md v0.3 §2).
-- Current task: M2 proofs — Lemmas K-2 (JVP estimator error, segment-local), K-3 (first-order schedule-independence of attribution), K-4 (Adam augmented-state lift), K-5 (formal reduction of the v0.2 inequality to Yu/Arora Thm 3.1); then pick the minimal side-information class 𝓘 for first pilots.
-- Key files: docs/design.md (v0.3 — §2.1 𝓚 definition, §2.4 target inequality, §2.5 lemma ledger, §5 binding constraints), docs/decision_log.md (D-009, D-010), docs/findings.md (F-001..F-004), docs/research_spec.md
-- Open questions: minimal 𝓘 class for first transport pilots? Homotopy generalization of Lemma K-1 to non-permutation pairs (needed for H4)? Conic/nonlinear refinement of Π_⊥? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
+- Status: In Progress — M2 lemma ledger largely discharged (docs/theory.md): K-1, K-2, K-4b, P-1, K-5a PROVED; K-3/K-3.1 sketch; K-5b stated. Headline theory results: P-1 path-burned floor (target inequality exact for fixed-subspace access classes, F-006), momentum order-defects Θ(η) vs SGD Θ(η²) (F-005, derives Sweeney 2606.29554, seeds H4), 𝓚 measurable from a single run (Cor K-3.1).
+- Current task: M2 remainder — choose minimal side-information class 𝓘 for first pilots (D-011; candidate ladder in design.md §2.5), then M3.1 pilot design (instrumented tiny run + branched-replay validation gate per §2.2); deferred to M5: K-3 constants, K-5b containment proof, Adam constant-tracking.
+- Key files: docs/theory.md (proofs K-1..K-5, P-1), docs/design.md (v0.4 — §2 definitions, §2.4 exact inequality, §2.5 ledger), docs/decision_log.md (D-009, D-010), docs/findings.md (F-001..F-006), docs/research_spec.md
+- Open questions: minimal 𝓘 class (D-011 pending)? Homotopy generalization of K-1 to non-permutation pairs (needed for H4)? Conic/state-dependent refinement of Π_⊥? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
 
 ## Conventions
 - Read-first order: CLAUDE.md → docs/roadmap.md → docs/design.md → whatever Active Context points at.

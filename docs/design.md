@@ -1,8 +1,10 @@
-# Design — Formal Framework (draft v0.3, M2 in progress)
+# Design — Formal Framework (draft v0.4, M2 in progress)
 
-Status: DRAFT v0.3. Core question fixed (D-009). The discretization of 𝓚 is now fixed (D-010): the transported-defect (discrete non-abelian-Stokes) form of §2.1, exact by construction. Remaining M2 items: proofs of Lemmas K-2..K-5 (§2.5), the minimal side-information class 𝓘 for first pilots, and the homotopy generalization to non-permutation history pairs. Nothing in this file licenses running experiments beyond the M3 roadmap discipline.
+Status: DRAFT v0.4. Core question fixed (D-009); 𝓚 discretization fixed (D-010). Lemma ledger largely discharged in docs/theory.md: K-1, K-2, K-4(b), P-1, K-5(a) PROVED; K-3 + Corollary K-3.1 at sketch level; K-5(b) stated. Remaining M2 items: minimal side-information class 𝓘 for first pilots (D-011 pending), homotopy generalization to non-permutation pairs, conic refinement of Π_⊥. Nothing in this file licenses running experiments beyond the M3 roadmap discipline.
 
-Supersedes v0.2. Changes: §2 rewritten — 𝓚 defined via exact swap defects + telescoping identity (former candidates (a)/(b) absorbed as derived scalars of (c), see D-010); TransportCost sharpened with a reachable-span projection; target inequality v0.2 stated; estimator/instrument section added (§2.2); lemma ledger added (§2.5).
+Supersedes v0.3. Changes: proofs landed in docs/theory.md; §2.2 gains the single-trajectory measurement consequence (Cor K-3.1); §2.4's E-weighted projected norm is now *defined* as a subspace distance (fixed by P-1, no longer a loose proxy) and the inequality is exact for fixed-subspace access classes; §2.5 ledger updated with statuses.
+
+Supersedes v0.2: §2 rewritten — 𝓚 defined via exact swap defects + telescoping identity (former candidates (a)/(b) absorbed as derived scalars of (c), see D-010); TransportCost sharpened with a reachable-span projection; target inequality v0.2 stated; estimator/instrument section added (§2.2); lemma ledger added (§2.5).
 
 Supersedes v0.1 (pre-literature-review): core question locked to the holonomy→transport-cost invariant (Q2), Q1 as machinery, Q3 as ablation axis; positioning constraints from the two gating papers added.
 
@@ -72,7 +74,7 @@ To first order in δ_k, Δ_k ≈ J_{Φ_A}(y_k)·δ_k — the **J·δ factorizati
 ### 2.2 Estimators (instrument spec, seeded for M3)
 
 - **Branched replay (exact, expensive)**: for a sampled inversion, actually retrain the tail from the swapped intermediate word — yields Δ_k exactly. Pilot-scale only; this is the ground-truth instrument.
-- **JVP transport (cheap, first-order)**: Δ̂_k = forward-mode JVP of the tail along the H₁ trajectory applied to δ_k; batchable across tracked defects. Error bound = Lemma K-2.
+- **JVP transport (cheap, first-order)**: Δ̂_k = forward-mode JVP of the tail along the H₁ trajectory applied to δ_k; batchable across tracked defects. Error bound = Lemma K-2. **Corollary K-3.1 (theory.md) makes this a single-run instrument**: the full inversion-indexed attribution is computable from H₁'s checkpoints alone (per pair: two extra map evaluations for δ̄ + one JVP chain) — no intermediate retraining, no access to H₂'s trajectory beyond its endpoint.
 - **Instrument validation gate**: at M3.1 tiny scale, JVP estimates must match branched replay within a stated tolerance on a per-sample audit *before* any 𝓚 number feeds a headline plot (the instrument lies before the subject does). K = O(T²) inversions ⇒ sample inversions with declared estimator variance.
 
 ### 2.3 Transport operator (unchanged from v0.2)
@@ -82,24 +84,29 @@ T: Θ → Θ attempting T(θ(H₁)) ≈_f θ(H₂), subject to a declared budget
 ### 2.4 TransportCost and target inequality v0.2 (sharpened)
 
 - **TransportCost(H₁ → H₂; 𝓘, ε)** := minimum compute (gradient-evaluation-equivalents) over budget-respecting T ∈ 𝒯(𝓘) achieving functional gap d_f ≤ ε (d_f per D-006).
-- **Reachable span.** An operator class induces, at each state, the set of realizable per-evaluation displacements R(𝓘, θ) (e.g., Yu/Arora's local class: the span of forget-set gradients). Π_⊥ := projection off span(R) — a working linear proxy; the conic/nonlinear refinement is an open M2 item (§2.5).
-- **Target inequality v0.2** (to prove, or refute toward H3/the empirical fallback):
+- **Reachable span.** An operator class induces, at each state, the set of realizable per-evaluation displacements R(𝓘, θ) (e.g., Yu/Arora's local class: the span of forget-set gradients — a *fixed* subspace S in linear models). The conic/nonlinear (state-dependent) refinement is an open M2 item (§2.5).
+- **Path-burned mass (fixed by P-1, theory.md)**: ‖Π_⊥ Σ_k Δ_k‖_E := dist_{Σ_E}(Σ_k Δ_k, S) = min_{c∈S} ‖Σ_E^{1/2}(Σ_k Δ_k + c)‖ — the functionally irreducible residual. The projection *distance*, not the naive orthogonal component: reachable motion may partially compensate off-span functional effects when Σ_E mixes subspaces, and the distance accounts for that.
+- **Target inequality v0.2** — now **exact for fixed-subspace access classes** (Proposition P-1, theory.md): TC(H₁→H₂; 𝒯_S, ε) = ∞ for every ε < dist_{Σ_E}(Σ_k Δ_k, S). General (state-dependent-reach) form remains the open target:
 
 > TransportCost(H₁ → H₂; 𝓘, ε) ≥ f( ‖Π_{⊥,𝓘} Σ_k Δ_k‖_E , ε )
 
-with ‖·‖_E a functionally-weighted norm and f monotone, diverging as the path-burned component exceeds the ε-tolerance. Sanity containments: (i) 𝓘 = local path-oblivious ⇒ Π_⊥ contains the off-span component ⇒ recovers Yu/Arora's impossibility as TC = ∞ below an ε floor; (ii) commuting histories (all δ_k = 0) ⇒ bound trivial and transport free — consistent.
+with f monotone, diverging as the path-burned mass exceeds the ε-tolerance. Sanity containments: (i) 𝓘 = local path-oblivious ⇒ recovers Yu/Arora's impossibility floor exactly (Lemma K-5a, proved); (ii) commuting histories (all δ_k = 0) ⇒ bound trivial and transport free — consistent.
 - **Approximate path-integrability (ε, class 𝓒)**: H₁, H₂ ∈ 𝓒 are ε-integrable if TransportCost is o(retraining) at gap ε. **Phase boundary restated in 𝓚 terms**: integrable ⇔ 𝓚's mass concentrates inside the reachable span (cheap operators exist); **path-burned** ⇔ mass concentrates in Π_⊥ (no budget within 𝓘 suffices) — generalizing Yu/Arora's off-span component from "span of forget-set data" to an arbitrary declared access class.
 - **Empirical fallback (D-009)**: if f resists proof, the deliverable is the measured scaling law: minimum observed budget vs 𝓚₁ / Π_⊥-mass across history pairs.
 
-### 2.5 Open items carried in M2
+### 2.5 Lemma ledger and open items (statuses per docs/theory.md)
 
-- **Lemma K-2**: JVP estimator error bound, controlled by curvature along the segment [y_k, y_k + δ_k] and tail-Jacobian conditioning — segment-local, no global quadraticity.
-- **Lemma K-3**: first-order schedule-independence of the attribution for reduced transposition schedules.
-- **Lemma K-4**: augmented-state lift — statement and leading-order bracket for Adam on (θ, m, v).
-- **Lemma K-5**: formal reduction of the v0.2 inequality to Yu/Arora Theorem 3.1 at 𝓘 = local path-oblivious.
+- **Lemma K-1** (telescoping): PROVED, exact.
+- **Lemma K-2** (JVP estimator error, segment-local, no global quadraticity): PROVED. Caveat: absolute-error bound with tail-geometric constants ⇒ §2.2 validation gate stays binding.
+- **Lemma K-3** (first-order schedule-independence) + **Corollary K-3.1** (single-trajectory surface formula): SKETCH — order bookkeeping complete, ε-δ constants deferred to M5.
+- **Lemma K-4** (stateful lift): (a)+(b) PROVED — EMA momentum makes the order defect Θ(η) vs SGD's Θ(η²), deriving Sweeney 2606.29554's empirical claim and seeding H4; (d) Adam normalization at SKETCH.
+- **Proposition P-1** (path-burned floor, fixed-subspace classes): PROVED — the v0.2 inequality exact for 𝒯_S; defines the E-norm.
+- **Lemma K-5** (Yu/Arora reduction): (a) static core PROVED as P-1 instance; (b) dynamic Theorem 3.1 containment STATED, proof deferred to M5.
+
+Open items:
+- Minimal side-information class 𝓘 for the first transport pilots (D-011 pending). Candidate ladder suggested by P-1: ∅ (do-nothing baseline) → fixed-subspace edits (last-layer / adapter span, where P-1 applies at linearization) → k checkpoints of H₁ → full H₂ descriptor.
 - Homotopy generalization of Lemma K-1 to non-permutation pairs (continuous family H(s), surface-integral form) — prerequisite for H4 optimizer contrasts.
-- Minimal side-information class 𝓘 for the first transport pilots.
-- Conic/nonlinear refinement of Π_⊥.
+- Conic/nonlinear (state-dependent reach) refinement of Π_⊥ — the frontier past P-1.
 
 ## 3. Candidate mathematical handles
 
