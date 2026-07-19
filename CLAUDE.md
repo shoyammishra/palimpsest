@@ -1,10 +1,10 @@
 # Palimpsest — Optimization Path Integrability in Deep Neural Networks
 
 ## Active Context
-- Status: In Progress — M1 gate CLOSED (D-009: REFORMULATE final, core = Q2 holonomy→transport-cost invariant; Q1 = machinery, Q3 = ablation axis). Both gating papers read end-to-end by principal (F-003, F-004); both kill-checks passed.
-- Current task: M2 formal framework — first deliverable: choose and justify the discretization of the accumulated-holonomy functional 𝓚 (candidates (a)–(c) in design.md §2) and prove/argue it is well-defined off the quadratic regime; then sharpen TransportCost and the target inequality.
-- Key files: docs/design.md (v0.2 — core question, definitions, binding positioning constraints §5), docs/findings.md (F-001..F-004), docs/decision_log.md (D-009), docs/research_spec.md
-- Open questions: which 𝓚 discretization (bracket-norm sum vs target-projected vs ordered-exponential mismatch)? What is the minimal side-information class 𝓘 for the first transport pilots? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
+- Status: In Progress — M2 underway. First M2 deliverable DONE (D-010): 𝓚 discretization fixed as the transported-defect (exact telescoping) form, well-defined off the quadratic regime by construction; TransportCost sharpened with reachable-span projection; target inequality v0.2 stated (design.md v0.3 §2).
+- Current task: M2 proofs — Lemmas K-2 (JVP estimator error, segment-local), K-3 (first-order schedule-independence of attribution), K-4 (Adam augmented-state lift), K-5 (formal reduction of the v0.2 inequality to Yu/Arora Thm 3.1); then pick the minimal side-information class 𝓘 for first pilots.
+- Key files: docs/design.md (v0.3 — §2.1 𝓚 definition, §2.4 target inequality, §2.5 lemma ledger, §5 binding constraints), docs/decision_log.md (D-009, D-010), docs/findings.md (F-001..F-004), docs/research_spec.md
+- Open questions: minimal 𝓘 class for first transport pilots? Homotopy generalization of Lemma K-1 to non-permutation pairs (needed for H4)? Conic/nonlinear refinement of Π_⊥? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
 
 ## Conventions
 - Read-first order: CLAUDE.md → docs/roadmap.md → docs/design.md → whatever Active Context points at.
