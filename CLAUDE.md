@@ -1,10 +1,10 @@
 # Palimpsest — Optimization Path Integrability in Deep Neural Networks
 
 ## Active Context
-- Status: In Progress — M2 lemma ledger largely discharged (docs/theory.md): K-1, K-2, K-4b, P-1, K-5a PROVED; K-3/K-3.1 sketch; K-5b stated. Headline theory results: P-1 path-burned floor (target inequality exact for fixed-subspace access classes, F-006), momentum order-defects Θ(η) vs SGD Θ(η²) (F-005, derives Sweeney 2606.29554, seeds H4), 𝓚 measurable from a single run (Cor K-3.1).
-- Current task: M2 remainder — choose minimal side-information class 𝓘 for first pilots (D-011; candidate ladder in design.md §2.5), then M3.1 pilot design (instrumented tiny run + branched-replay validation gate per §2.2); deferred to M5: K-3 constants, K-5b containment proof, Adam constant-tracking.
-- Key files: docs/theory.md (proofs K-1..K-5, P-1), docs/design.md (v0.4 — §2 definitions, §2.4 exact inequality, §2.5 ledger), docs/decision_log.md (D-009, D-010), docs/findings.md (F-001..F-006), docs/research_spec.md
-- Open questions: minimal 𝓘 class (D-011 pending)? Homotopy generalization of K-1 to non-permutation pairs (needed for H4)? Conic/state-dependent refinement of Π_⊥? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
+- Status: In Progress — M3.1 first rung DONE. 𝓘 for pilots fixed (D-011: 𝓘₁ = {π, H₁ checkpoints}; 𝓚-aware correction as first operator). E-000/E-001/E-002 run and CONFIRMED (F-007): K-4b verified quantitatively (slope 2.00 SGD vs 1.00 momentum; constant ratio 1.0001, cosine ≈1), linear transport valid at pilot scale, K-1 verified in code to 3e-17. Harness: src/pilot_defects.py (numpy, manual backprop, self-checking).
+- Current task: E-003 — first 𝓚-aware transport attempt (D-011 operator T(θ)=θ+ΣJ̄δ̄ via K-3.1) vs degenerate baselines (do-nothing / average / light fine-tune), functional metric per D-006; hypothesis to be logged in experiment_log BEFORE the run. Also queued: Adam-normalization η-sweep (K-4d check); M2 leftovers deferred to M5 (K-3 constants, K-5b proof).
+- Key files: src/pilot_defects.py, docs/experiment_log.md (E-000..E-002), docs/theory.md (K-1..K-5, P-1), docs/design.md (v0.4), docs/decision_log.md (D-010, D-011), docs/findings.md (F-001..F-007)
+- Open questions: does the Θ(η) momentum law survive Adam's normalization (K-4d)? Homotopy generalization of K-1 to non-permutation pairs (needed for H4)? Conic/state-dependent refinement of Π_⊥? Which PolyPythias run pairs make the cheapest first history-pair (M3.2)?
 
 ## Conventions
 - Read-first order: CLAUDE.md → docs/roadmap.md → docs/design.md → whatever Active Context points at.

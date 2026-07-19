@@ -101,3 +101,14 @@ Source: principal engineer, theory work (docs/theory.md, Proposition P-1 — PRO
 2. **Corollary K-3.1 (sketch)**: the full inversion-indexed attribution of the endpoint gap is computable from **H₁'s trajectory alone** (checkpoints + two map evaluations per pair + one JVP chain) up to O(KTη³) error — 𝓚 is a single-run instrument, not a thought experiment requiring intermediate retraining. This sets the M3.1 pilot design: one instrumented run + branched-replay spot checks as the validation gate.
 
 Caveats travel with both: K-2/K-3 error constants are geometric in tail length (absolute-error bounds; relative error uncontrolled when the tail nearly annihilates a defect), so the branched-replay validation gate of design.md §2.2 is binding before any 𝓚 number is trusted.
+
+## F-007 (2026-07-19) — First empirical contact: K-4b confirmed quantitatively; linear transport valid at pilot scale; K-1 verified in code to machine precision
+
+Source: E-000/E-001/E-002 (docs/experiment_log.md), tiny-scale pilot (~241-param tanh MLP, T=64, float64, seeded; harness src/pilot_defects.py; raw results results/raw/pilot_defects_2026-07-19.json).
+
+1. **K-4b holds with exponent, constant, and direction** (E-002): swap-defect scaling slope 1.9998 for SGD vs 1.0022 for EMA momentum (β=0.9), R² ≈ 1 both; measured momentum defect matches the derived ηβ(1−β)(g_a−g_b) to ratio 1.000117 and cosine 0.99999999. The theory's sharpest derived prediction (F-005) survives first contact intact — and the optimizer-state block is O(1) in η (slope −0.02), as derived.
+2. **Linear response of tails** (E-001): transported defects respond linearly to defect scale within 0.02% over three orders of magnitude of h, at all three swap positions — the JVP/linear-transport estimator is valid at this scale. Per-scale gate: revalidate at larger η/T before trusting elsewhere.
+3. **K-1 telescoping verified in code at 3.4e-17 relative error** over a 21-swap random permutation (E-000) — the instrument's bookkeeping matches the exact identity at float roundoff.
+4. Incidental: tails were *contractive* here (transported norm 0.36–0.81× the defect) — a first hint of the integrable phase in late-training small-model regimes; observation only, no claim.
+
+Caveats: tiny scale, SGD/EMA only (Adam normalization untested — K-4d), two-step defects for E-002, and nothing here is a transport/generalization result (D-006 headline metrics not yet in play).
