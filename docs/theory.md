@@ -94,6 +94,12 @@ Every term on the right is computable from **H₁'s trajectory alone** (checkpoi
 
 **(d) Adam (SKETCH).** Adam is EMA momentum composed with a normalization N(m, v) = m/(√v + ε̂) and a v-channel (β₂, squared gradients). The θ-step reads state through N; since the swapped m-arguments differ at O(1), the sum-difference N(·)+N(·) − N(·)−N(·) is generically O(1), so δ^θ = Θ(η) survives any C¹ normalization with bounded derivative (no special cancellation; the linear case (b) exhibits the explicit constant β₁(1−β₁)). The v-channel adds δ^v = Θ(1) mass with the same geometric decay in β₂. Regularity caveat: m/(√v + ε̂) is not C¹ at v = 0; use the smooth variant m/√(v + ε̂²) or note v > 0 after the first step wherever gradients are nonzero. Full constant-tracking is not needed for the order-of-η claim and is deferred.
 
+*Sharpening (β₁ = 0, normalization-only; 2026-07-19).* With no momentum channel a linear readout gives δ^θ = O(η²) (case b at β = 0), so this case isolates the readout's nonlinearity. Freezing θ in the state recursion and expanding N in v: the two orders evaluate N at v-arguments differing by β₂(1−β₂)(v − g_b²) and β₂(1−β₂)(g_a² − v) respectively (elementwise), giving
+
+> δ^θ = η · β₂(1−β₂) [ N_v(g_a, v̄)(v − g_b²) + N_v(g_b, v̄)(g_a² − v) ] + O(η²),  N_v := ∂N/∂v,
+
+generically nonzero: **the v-channel alone makes order defects first-order**. Note the (1−β₂) suppression of the leading constant while O(η²) terms are unsuppressed — empirically this bounds the η-range where the first-order term dominates (visible in E-004's full-range fit). *Empirical status*: confirmed at pilot scale, E-004 / F-009 — slope 1.0014 (β₁ = 0.9) and 1.01 at small η (β₁ = 0), each with the frozen-θ leading-order predictor matching in norm and direction. Status stays SKETCH: constant-tracking and tail transport for the stateful case remain deferred to M5.
+
 ---
 
 ## Proposition P-1 (path-burned floor for fixed-subspace access classes) — PROVED

@@ -123,3 +123,14 @@ Source: E-003 (docs/experiment_log.md), harness src/pilot_transport.py, raw resu
 4. **Heavy cancellation**: ‖ΣΔ̄‖/Σ‖Δ̄‖ ≈ 0.12–0.22 — the holonomy mass 𝓚₁ overstates the net gap 5–8×, confirming the design.md §2.1 warning that 𝓚₁ is machinery, never a headline number.
 
 Caveats: tiny scale, SGD only, 𝓒_perm pairs we constructed, single seed per severity, and the fine-tune baseline's poor showing partly reflects the small gap magnitudes at mild severity (its blind displacement dwarfs them) — not evidence fine-tuning is useless, evidence it is not path-targeted.
+
+## F-009 (2026-07-19) — The Θ(η) order-defect law survives Adam's nonlinear state readout; the v-channel alone suffices (K-4d confirmed at pilot scale)
+
+Source: E-004 (docs/experiment_log.md), harness src/pilot_adam.py, raw results/raw/pilot_adam_2026-07-19.json. Index-free smooth-normalized Adam (K-4a variant, no bias correction), warm state, two-step swap defects, η ∈ [1e-5, 1e-3].
+
+1. **Full Adam-class (β₁ = 0.9, β₂ = 0.9): slope 1.0014** (R² ≈ 1), with the frozen-θ leading-order predictor (independent code path: state-only recursion at frozen θ) matching to ratio 1.000046 and cosine 0.9999999. Normalization performs no special cancellation — K-4d's headline claim holds.
+2. **The sharp result — normalization-only (β₁ = 0): slope ≈ 1.01 at small η** (frozen-θ check ratio 0.9993, cosine 0.9997). Under a *linear* readout, β₁ = 0 gives slope 2 (E-002/K-4b: the η-term carries factor β(1−β)). So the first-order defect here is produced *entirely by the second-moment channel passing through the nonlinear readout* — direct evidence for K-4d's mechanism ("any C¹ readout of O(1)-differing state arguments leaks order at Θ(η)"), not just its conclusion. Derived leading term (now in theory.md K-4d): δ^θ = η·β₂(1−β₂)[N_v(g_a,v̄)(v−g_b²) + N_v(g_b,v̄)(g_a²−v)] + O(η²).
+3. **Both state channels remember order at Θ(1)** (slopes ≈ 0 for δ^m and δ^v), and K-4b's δ^m constant (1−β₁)²‖g_a−g_b‖ was verified incidentally across the two conditions (0.00541 vs 0.01 × 0.541).
+4. **H4 chain now complete at pilot scale**: SGD Θ(η²) → EMA momentum Θ(η) → Adam-class Θ(η), with constants and directions checked at each rung. Per inversion, every stateful optimizer tested accumulates holonomy one order of η more than SGD — the quantitative seed of the optimizer-stratification hypothesis is now empirical, not just derived.
+
+Caveats: two-step defects (no tails), tiny scale, single batch pair, index-free variant (canonical Adam's bias correction differs early in training), and condition (ii)'s full-range slope (1.20) is contaminated by unsuppressed O(η²) terms at the top of the range — the Θ(η) claim rests on the pre-declared low-η refit plus the constant-and-direction check, both passing.
