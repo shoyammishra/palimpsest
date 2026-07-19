@@ -112,3 +112,14 @@ Source: E-000/E-001/E-002 (docs/experiment_log.md), tiny-scale pilot (~241-param
 4. Incidental: tails were *contractive* here (transported norm 0.36–0.81× the defect) — a first hint of the integrable phase in late-training small-model regimes; observation only, no claim.
 
 Caveats: tiny scale, SGD/EMA only (Adam normalization untested — K-4d), two-step defects for E-002, and nothing here is a transport/generalization result (D-006 headline metrics not yet in play).
+
+## F-008 (2026-07-19) — First 𝓚-aware transport works at pilot scale: possible but not cheap; functional/parameter metrics dissociate at high inversion count
+
+Source: E-003 (docs/experiment_log.md), harness src/pilot_transport.py, raw results/raw/pilot_transport_2026-07-19.json. First experiment where the D-006 headline metric (functional gap) is in play.
+
+1. **The D-011 operator transports** (𝓘₁ = {π, H₁ checkpoints}; T(θ₁) = θ₁ + Σ J̄δ̄ via Cor K-3.1, replay-transport implementation): functional gap ratio r = d_f(T(θ₁), θ₂)/d_f(θ₁, θ₂) = **0.145 at mild reordering** (44 inversions), 0.265 at moderate (218), 0.608 at full permutation (982) — monotone in severity as the K-3.1 error budget predicts, and better than every degenerate baseline at every severity (checkpoint-average: 4.8–112×; blind fine-tune: 1.04–29×). The theory's constructive operator survives first contact.
+2. **Possible ≠ cheap — first phase-boundary data point**: budget was 25× / 143× / 713× retraining (K = O(T²) tail replays is the driver). Per D-011 this is reported as a finding, not hidden: at this scale, 𝓘₁-transport beats retraining on *nothing yet*; batched JVP (O(T) chains) + inversion sampling are the declared compression paths before any cost claim.
+3. **Metric dissociation at high K**: at full permutation the correction *overshoots in parameter space* (residual 1.63 > do-nothing's 1.0) while still cutting the functional gap 40% — large attribution errors live in functionally flat directions. Direct evidence for D-006 (parameter distance is the wrong target) and a localization of the K-3.1 validity edge to K ∈ (218, 982] at η = 0.05, T = 64.
+4. **Heavy cancellation**: ‖ΣΔ̄‖/Σ‖Δ̄‖ ≈ 0.12–0.22 — the holonomy mass 𝓚₁ overstates the net gap 5–8×, confirming the design.md §2.1 warning that 𝓚₁ is machinery, never a headline number.
+
+Caveats: tiny scale, SGD only, 𝓒_perm pairs we constructed, single seed per severity, and the fine-tune baseline's poor showing partly reflects the small gap magnitudes at mild severity (its blind displacement dwarfs them) — not evidence fine-tuning is useless, evidence it is not path-targeted.

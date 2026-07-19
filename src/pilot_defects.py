@@ -87,7 +87,7 @@ def momentum_pair(theta, m, first, second, batches, eta, beta):
     return theta, m
 
 
-def make_data(rng, n_steps):
+def make_data(rng, n_steps, return_teacher=False):
     teacher = init_params(rng)  # labels from a random teacher net + noise
     batches = []
     for _ in range(n_steps):
@@ -95,6 +95,8 @@ def make_data(rng, n_steps):
         W1, b1, w2, b2 = unpack(teacher)
         y = np.tanh(X @ W1.T + b1) @ w2 + b2 + 0.1 * rng.normal(size=N_BATCH)
         batches.append((X, y))
+    if return_teacher:
+        return batches, teacher
     return batches
 
 
@@ -274,8 +276,9 @@ def main():
         commit = "unknown"
     out = {"commit": commit, "seed_data": 42, "seed_harness": 0,
            "E000": r000, "E001": r001, "E002": r002}
-    os.makedirs(os.path.join("results", "raw"), exist_ok=True)
-    path = os.path.join("results", "raw", "pilot_defects_2026-07-19.json")
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.makedirs(os.path.join(root, "results", "raw"), exist_ok=True)
+    path = os.path.join(root, "results", "raw", "pilot_defects_2026-07-19.json")
     with open(path, "w") as f:
         json.dump(out, f, indent=2)
     print("written:", path)
