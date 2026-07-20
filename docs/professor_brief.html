@@ -1,0 +1,658 @@
+<title>Palimpsest — A Brief on What Is New</title>
+
+<style>
+  /* ---------- tokens ---------- */
+  :root {
+    --paper:      #F6F6F1;
+    --paper-2:    #EFEFE8;
+    --ink:        #1B1D1B;
+    --ink-soft:   #55584F;
+    --ink-faint:  #82857A;
+    --rule:       #D6D5C9;
+    --rule-soft:  #E3E2D8;
+    --accent:     #6E1B22;
+    --accent-2:   #A64A3E;
+    --accent-wash:#F0E4E1;
+
+    --f-display: "Palatino Linotype", "Book Antiqua", Palatino, "URW Palladio L", P052, serif;
+    --f-body:    Georgia, "Iowan Old Style", Charter, "Source Serif Pro", serif;
+    --f-util:    "SF Mono", "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+
+    --measure: 34rem;
+    --rail: 8.5rem;
+    --gap: 1.15rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      #15161A;
+      --paper-2:    #1D1F24;
+      --ink:        #E7E5DC;
+      --ink-soft:   #A9A99F;
+      --ink-faint:  #7C7C74;
+      --rule:       #33353C;
+      --rule-soft:  #26282E;
+      --accent:     #D99A93;
+      --accent-2:   #E0B0A0;
+      --accent-wash:#2A2124;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #15161A;
+    --paper-2:    #1D1F24;
+    --ink:        #E7E5DC;
+    --ink-soft:   #A9A99F;
+    --ink-faint:  #7C7C74;
+    --rule:       #33353C;
+    --rule-soft:  #26282E;
+    --accent:     #D99A93;
+    --accent-2:   #E0B0A0;
+    --accent-wash:#2A2124;
+  }
+  :root[data-theme="light"] {
+    --paper:      #F6F6F1;
+    --paper-2:    #EFEFE8;
+    --ink:        #1B1D1B;
+    --ink-soft:   #55584F;
+    --ink-faint:  #82857A;
+    --rule:       #D6D5C9;
+    --rule-soft:  #E3E2D8;
+    --accent:     #6E1B22;
+    --accent-2:   #A64A3E;
+    --accent-wash:#F0E4E1;
+  }
+
+  /* ---------- base ---------- */
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 1.5rem 6rem;
+  }
+  @media (min-width: 900px) { body { font-size: 18px; } }
+
+  .sheet { max-width: 58rem; margin: 0 auto; }
+
+  p, li { hyphens: auto; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
+  em { font-style: italic; }
+  strong { font-weight: 700; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    padding: 4.5rem 0 2.2rem;
+    border-bottom: 3px double var(--rule);
+    margin-bottom: 3rem;
+  }
+  .eyebrow {
+    font-family: var(--f-util);
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.6rem;
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(2.1rem, 6vw, 3.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+    max-width: 20ch;
+  }
+  .masthead .sub {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    color: var(--ink-soft);
+    margin-top: 1rem;
+    max-width: 42ch;
+  }
+  .byline {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem;
+    margin-top: 2.4rem;
+    font-family: var(--f-util);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- section shell ---------- */
+  .section {
+    display: grid;
+    gap: 0 2.5rem;
+    padding-bottom: 3.4rem;
+    margin-bottom: 3.4rem;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .section:last-of-type { border-bottom: 0; }
+  @media (min-width: 940px) {
+    .section { grid-template-columns: var(--rail) minmax(0, 1fr); }
+  }
+  .rail {
+    font-family: var(--f-util);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 0.75rem;
+    line-height: 1.5;
+  }
+  .rail .num {
+    display: block;
+    font-family: var(--f-display);
+    font-size: 1.5rem;
+    letter-spacing: 0;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .body-col { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+  .body-col > * { max-width: var(--measure); }
+  .body-col > .full, .body-col > figure, .body-col > .table-wrap { max-width: none; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.008em;
+    text-wrap: balance;
+    margin-bottom: 0.35rem;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 1.08rem;
+    letter-spacing: 0.005em;
+    margin-top: 1.1rem;
+  }
+
+  .lede {
+    font-size: 1.12em;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .lede::first-letter {
+    font-family: var(--f-display);
+    float: left;
+    font-size: 3.05em;
+    line-height: 0.82;
+    padding: 0.06em 0.1em 0 0;
+    color: var(--accent);
+  }
+
+  /* ---------- thesis / pull quote ---------- */
+  .thesis {
+    border-left: 3px solid var(--accent);
+    padding: 0.15rem 0 0.15rem 1.5rem;
+    font-family: var(--f-display);
+    font-size: 1.18em;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .thesis .tag {
+    display: block;
+    font-family: var(--f-util);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ---------- the gap diagram ---------- */
+  .gap-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 0.6rem 0 0.4rem;
+  }
+  @media (min-width: 780px) {
+    .gap-grid { grid-template-columns: 1fr 1.25fr 1fr; align-items: stretch; }
+  }
+  .gap-card {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 1.3rem 1.35rem 1.4rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .gap-card.centre {
+    background: var(--accent-wash);
+    border: 1px solid var(--accent);
+    box-shadow: 0 1px 0 var(--accent);
+  }
+  .gap-card .who {
+    font-family: var(--f-util);
+    font-size: 0.63rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .gap-card.centre .who { color: var(--accent); }
+  .gap-card .what {
+    font-family: var(--f-display);
+    font-size: 1.14rem;
+    line-height: 1.3;
+  }
+  .gap-card .stop {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .gap-card.centre .stop { color: var(--ink); }
+
+  /* ---------- claim list ---------- */
+  .claims { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+  .claims li {
+    display: grid;
+    gap: 0.1rem 1.1rem;
+    grid-template-columns: 1.9rem 1fr;
+  }
+  .claims .mark {
+    font-family: var(--f-display);
+    font-size: 1.25rem;
+    color: var(--accent);
+    line-height: 1.35;
+  }
+  .claims .head {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .claims .txt { grid-column: 2; color: var(--ink-soft); }
+
+  /* ---------- findings ---------- */
+  .finding {
+    display: grid;
+    gap: 0.15rem 1.4rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  @media (min-width: 700px) { .finding { grid-template-columns: 7.5rem 1fr; } }
+  .finding .val {
+    font-family: var(--f-util);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    padding-top: 0.16rem;
+  }
+  .finding .desc { color: var(--ink-soft); }
+  .finding .desc b { color: var(--ink); font-weight: 700; }
+
+  /* ---------- verdict chips ---------- */
+  .chip {
+    display: inline-block;
+    font-family: var(--f-util);
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.16em 0.5em;
+    border: 1px solid var(--rule);
+    color: var(--ink-faint);
+    vertical-align: 0.12em;
+    white-space: nowrap;
+  }
+  .chip.held { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- table ---------- */
+  .table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+  table { border-collapse: collapse; width: 100%; min-width: 46rem; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 0.62rem 0.7rem; vertical-align: top; border-bottom: 1px solid var(--rule-soft); }
+  thead th {
+    font-family: var(--f-util);
+    font-size: 0.6rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  tbody th { font-weight: 400; font-style: italic; color: var(--ink-soft); min-width: 15rem; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  td { text-align: center; font-family: var(--f-util); font-size: 0.82rem; color: var(--ink-faint); }
+  td.yes { color: var(--accent); }
+  tr.ours { background: var(--accent-wash); }
+  tr.ours th { font-style: normal; font-weight: 700; color: var(--ink); }
+  tr.ours td.yes { font-weight: 700; }
+  .caption {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-top: 0.7rem;
+    max-width: 60ch;
+  }
+
+  /* ---------- risks ---------- */
+  .risk { border-top: 1px solid var(--rule-soft); padding: 0.85rem 0; }
+  .risk summary {
+    cursor: pointer;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 1rem;
+    list-style: none;
+    display: flex; gap: 0.7rem; align-items: baseline;
+  }
+  .risk summary::-webkit-details-marker { display: none; }
+  .risk summary::before {
+    content: "+";
+    font-family: var(--f-util);
+    color: var(--accent);
+    font-size: 0.9rem;
+  }
+  .risk[open] summary::before { content: "\2212"; }
+  .risk p { margin-top: 0.5rem; color: var(--ink-soft); padding-left: 1.4rem; max-width: var(--measure); }
+
+  /* ---------- refs ---------- */
+  ol.refs { padding-left: 1.3rem; font-size: 0.9rem; color: var(--ink-soft); display: flex; flex-direction: column; gap: 0.5rem; }
+  ol.refs li::marker { color: var(--accent); font-family: var(--f-util); font-size: 0.8rem; }
+  ol.refs .t { color: var(--ink); font-style: italic; }
+
+  ul.plain { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  ul.plain li { padding-left: 1.1rem; position: relative; color: var(--ink-soft); }
+  ul.plain li::before { content: "—"; position: absolute; left: 0; color: var(--accent); }
+  ul.plain b { color: var(--ink); }
+
+  .colophon {
+    margin-top: 4rem; padding-top: 1.4rem;
+    border-top: 3px double var(--rule);
+    font-family: var(--f-util);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .masthead, .section { animation: rise 0.5s ease-out both; }
+    .section:nth-of-type(2) { animation-delay: 0.04s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="eyebrow">Research brief · Project Palimpsest · 20 July 2026</div>
+    <h1>Can a trained model be rewritten instead of retrained?</h1>
+    <p class="sub">Two models, same data, different training histories. What does it cost to turn one into the other — and when is that flatly impossible?</p>
+    <div class="byline">
+      <span>Optimization-path integrability</span>
+      <span>Novelty case &amp; evidence to date</span>
+      <span>Written in plain language</span>
+    </div>
+  </header>
+
+  <!-- ============ 1. THE IDEA ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">I</span>The idea</div>
+    <div class="body-col">
+      <h2>Order leaves a permanent mark</h2>
+      <p class="lede">Two cooks get identical ingredients and the same recipe. One adds the salt first and the acid last; the other does the reverse. The finished dishes are not the same — the <em>order</em> of the steps got cooked in. Now the harder question: given only the two finished dishes, can you turn one into the other with a small correction, without cooking either from scratch? And can you tell in advance how hard that will be — or that it is impossible, because some flavour can no longer be separated out?</p>
+
+      <p>Training a neural network is exactly that kind of ordered process. A model is not built in one shot. It is nudged, step by tiny step, by the data it sees, in the order it sees it, with a particular optimizer and schedule. Change the order and you get a different final model from the same data and the same compute. Everyone knows this much.</p>
+
+      <p>What nobody has answered is the question underneath it:</p>
+
+      <div class="thesis">
+        <span class="tag">The question</span>
+        Given two models trained from the same ingredients but with different histories, what is the <em>least</em> computation needed to convert one into the other without retraining — and is there a number, measurable from the training path itself, that predicts that cost, including predicting when the cost is infinite?
+      </div>
+
+      <p>That last clause matters. If some of the difference is permanently burned into the weights, no correction of the allowed kind will ever remove it, at any budget. We call such information <strong>path-burned</strong>.</p>
+
+      <p>Two outcomes are both real results. Either the law exists — training is, in a precise sense, partly rewritable — or it provably breaks past some point, which is an impossibility result. The project does not depend on the converter working.</p>
+    </div>
+  </section>
+
+  <!-- ============ 2. THE GAP ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">II</span>What is new</div>
+    <div class="body-col">
+      <h2>The two nearest papers stop one step short — in opposite directions</h2>
+      <p>This is the whole novelty case, and it is unusually clean. The closest published work on each side halts just before our question, and one of them names our branch as unexplored.</p>
+
+      <div class="gap-grid full">
+        <div class="gap-card">
+          <div class="who">Sweeney · ICML 2026</div>
+          <div class="what">Predicts which order is better</div>
+          <div class="stop">Computes a small quantity at the <em>starting point</em> and uses it to plan a good training order. It never looks at two finished models, never converts between them, and never discusses cost. Its own experiments show the local quantity loses accuracy over long training — 93% down to 65%.</div>
+        </div>
+        <div class="gap-card centre">
+          <div class="who">The unoccupied middle · this project</div>
+          <div class="what">Measures the cost of converting one finished model into another</div>
+          <div class="stop">Accumulate the order-sensitivity along the <em>whole</em> path, operate on <em>finished</em> models, and tie that accumulated number to conversion cost — with a hard limit where cost becomes infinite. Built so that both neighbours fall out as special cases.</div>
+        </div>
+        <div class="gap-card">
+          <div class="who">Yu, He, Goyal &amp; Arora · 2025</div>
+          <div class="what">Proves a narrow impossibility</div>
+          <div class="stop">Shows that <em>history-blind</em> unlearning rules — the same fixed rule applied regardless of how each model was trained — push the two models further apart. The paper explicitly excludes history-aware methods, which is exactly what we build.</div>
+        </div>
+      </div>
+
+      <p>Their paper frames its result as “pick at most two of three” among: ignore the history, match the retrained model, use only local rules. They give up <em>matching</em>. We give up <em>ignoring the history</em> — our method is told the history difference and uses it. The authors state that branch exists and do not pursue it. Our central question is literally how much budget makes it affordable.</p>
+
+      <h3>The four things that are new together</h3>
+      <ul class="claims">
+        <li>
+          <span class="mark">&sect;</span>
+          <span class="head">We accumulate along the whole path, not at one point.</span>
+          <span class="txt">Prior order-sensitivity work computes a local number at the start and uses it to plan. We add it up along the entire run, which is what turns a planning heuristic into a property of a finished model.</span>
+        </li>
+        <li>
+          <span class="mark">&sect;</span>
+          <span class="head">We convert between finished models.</span>
+          <span class="txt">No prior work takes two already-trained models with different histories and edits one toward the other without replaying the data. We built one that works.</span>
+        </li>
+        <li>
+          <span class="mark">&sect;</span>
+          <span class="head">We propose a cost law, not a gadget.</span>
+          <span class="txt">A quantitative relationship between a measured property of the training path and the compute needed to convert. Laws generalize; editing tricks do not.</span>
+        </li>
+        <li>
+          <span class="mark">&sect;</span>
+          <span class="head">Our impossibility floor contains theirs as a special case.</span>
+          <span class="txt">We proved a limit for any method confined to a fixed set of directions. Set those directions to the ones history-blind rules are stuck in, and the published 2025 theorem falls out. An incremental paper cannot swallow a competitor's theorem; ours is built to.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 3. TABLE ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">III</span>The field, side by side</div>
+    <div class="body-col">
+      <h2>Capabilities exist scattered; the combination does not</h2>
+      <p>Each column is one capability that defines the contribution. Individually, most of them appear somewhere in the literature. No prior work has them together.</p>
+
+      <div class="table-wrap full">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Work</th>
+              <th scope="col">Adds up along the whole path</th>
+              <th scope="col">Converts finished models</th>
+              <th scope="col">Cost law</th>
+              <th scope="col">Hard limit</th>
+              <th scope="col">Uses the history</th>
+              <th scope="col">Past toy scale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Sweeney, ICML 2026 — order prediction</th><td>no</td><td>no</td><td>no</td><td>no</td><td>planning only</td><td class="yes">yes</td></tr>
+            <tr><th scope="row">Sweeney 2026 — optimizer-memory noise</th><td>no</td><td>no</td><td>no</td><td>no</td><td>—</td><td class="yes">yes</td></tr>
+            <tr><th scope="row">Xu 2026 — trajectory geometry</th><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td></tr>
+            <tr><th scope="row">Yu / He / Goyal / Arora 2025 — unlearning impossibility</th><td>no</td><td>no</td><td>no</td><td class="yes">history-blind only</td><td>no, by exclusion</td><td class="yes">1–14B</td></tr>
+            <tr><th scope="row">Rukhovich 2025 — local order criterion</th><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td><td>partial</td></tr>
+            <tr><th scope="row">PolyPythias 2025 — 45-run testbed</th><td>dataset</td><td>no</td><td>no</td><td>no</td><td>—</td><td class="yes">yes</td></tr>
+            <tr><th scope="row">Model merging / editing / continual learning</th><td>no</td><td>endpoints only</td><td>no</td><td>no</td><td>no</td><td class="yes">yes</td></tr>
+            <tr class="ours"><th scope="row">This project</th><td class="yes">yes</td><td class="yes">yes, built</td><td class="yes">yes, first data point</td><td class="yes">yes, proved floor</td><td class="yes">yes, by design</td><td>not yet — pilot</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">“Adds up along the whole path” means the quantity accumulates over training rather than being computed at a single point. “Hard limit” means the work identifies when conversion is impossible at <em>any</em> budget. The last cell is the honest one: scale-up is the declared next step, using the public PolyPythias runs rather than pretraining from scratch.</p>
+
+      <h3>Fields we sit next to, and are not</h3>
+      <ul class="plain">
+        <li><b>Machine unlearning</b> removes specific data. That is one special case of converting any history into another.</li>
+        <li><b>Model editing (ROME, MEMIT)</b> changes specific facts. It targets facts; we target histories, and ask about cost and limits rather than a single recipe.</li>
+        <li><b>Model merging and task arithmetic</b> combine endpoints heuristically. They never ask what conversion costs or when it is impossible.</li>
+        <li><b>Linear mode connectivity</b> studies the geometry between two endpoints, not the cost of moving between them using the history.</li>
+        <li><b>Influence functions</b> measure one data point's effect — a per-point sensitivity, not conversion between full histories.</li>
+        <li><b>Curriculum learning</b> chooses a good order up front; <b>training-order recovery</b> infers which order was used. Both are “what was the order”, not “can the result be rewritten, and at what cost”.</li>
+        <li><b>The NTK / lazy regime</b> is where order genuinely does not matter — so any positive result must be shown <em>outside</em> it, or it is folklore. That is a discipline we impose on ourselves.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 4. EVIDENCE ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">IV</span>Evidence so far</div>
+    <div class="body-col">
+      <h2>What is proved, what is measured, and at what scale</h2>
+
+      <h3>Proved on paper</h3>
+      <p><strong>Momentum makes order matter more — by a predictable amount.</strong> With plain gradient descent, order effects shrink <em>quadratically</em> as you take smaller steps: halve the step, the effect drops to a quarter. We proved that with momentum — the running memory of recent updates that nearly every modern optimizer keeps — the effect shrinks only <em>linearly</em>. Halve the step, halve the effect. The memory of order lives in the optimizer's own state and leaks into the model over time. A separate 2026 paper reported this empirically; we derive it, and pin down its size.</p>
+      <p><strong>An impossibility floor that swallows a published theorem.</strong> For any method allowed to move the model only within a fixed set of directions — imagine being able to push north–south but never east–west — part of the difference between two models can never be removed, at any budget. The right measure of that permanent residual is subtle: it is a projection <em>distance</em>, because allowed motion can partly compensate for forbidden directions, so the naive answer is wrong. Honest limit: this holds for fixed-direction methods. Real fine-tuning can change its reachable directions as it goes, and extending the floor to that case is open.</p>
+      <p><strong>The key quantity is measurable from one run.</strong> The number that predicts the conversion gap can be computed from a single model's saved checkpoints. No retraining of intermediate versions. That is what makes this an instrument rather than a thought experiment.</p>
+
+      <h3>Measured in code — on a few-hundred-parameter network</h3>
+      <p>Every number below comes from a deliberately tiny network in high-precision arithmetic with fixed seeds, run as a cheap smoke test of the exact pipeline before any expensive run. None of these are large-scale claims.</p>
+
+      <div class="full">
+        <div class="finding">
+          <div class="val">2.00 / 1.00</div>
+          <div class="desc"><b>The momentum law held to four decimal places.</b> Measured shrink-rates matched theory exactly — 2 for plain, 1 for momentum — with the direction and size of the effect agreeing to better than one part in a thousand. <span class="chip held">confirmed</span></div>
+        </div>
+        <div class="finding">
+          <div class="val">1.0014</div>
+          <div class="desc"><b>It survives Adam.</b> Adam's normalization step could in principle have cancelled the momentum effect. It does not. Sharper still: with momentum switched fully <em>off</em>, Adam's <em>other</em> internal memory reproduced the first-order sensitivity on its own — exactly as our sketch argued. Plain, momentum, and Adam-family all land where the theory says. <span class="chip held">confirmed</span></div>
+        </div>
+        <div class="finding">
+          <div class="val">15 digits</div>
+          <div class="desc"><b>The bookkeeping identity is exact.</b> The accounting identity the whole method rests on matched the true value to roundoff over a 21-swap reordering.</div>
+        </div>
+        <div class="finding">
+          <div class="val">39–85%</div>
+          <div class="desc"><b>A first working converter.</b> Using only declared side-information, it closed 39% of the behavioural gap on a full scramble, 74% on a moderate reordering, and 85% on a mild one. Difficulty rose monotonically with reordering severity, as the theory predicts, and it beat every simple shortcut we compared against — checkpoint averaging, blind fine-tuning — at every level.</div>
+        </div>
+        <div class="finding">
+          <div class="val">5–11×</div>
+          <div class="desc"><b>Cost cut roughly tenfold by bookkeeping alone.</b> Replacing a repeated computation with one shared pass changed the converter's answers by under 0.0005 in gap ratio. This changed the cost's <em>structure</em>: that pass is now fixed overhead, and per-correction measurements dominate.</div>
+        </div>
+        <div class="finding">
+          <div class="val">12–22%</div>
+          <div class="desc"><b>The obvious next shortcut provably fails here — and we know why.</b> “Sample a few corrections instead of computing all of them” was pre-registered as a predicted failure. The corrections mostly <em>cancel</em>: the net is only 12–22% the size of the gross, so any random sample inherits huge noise. We verified the exact error law to ~1% across 84 configurations. At mild reordering, sampled conversion is worse than doing nothing.</div>
+        </div>
+        <div class="finding">
+          <div class="val">600 / 982</div>
+          <div class="desc"><b>The breakdown point is a frontier, not a wall.</b> Overshoot in raw-weight terms grows smoothly with severity and crosses over at about 600 of 982 swaps at our step size — and halving the step size roughly halves the overshoot. So the approximation is asymptotically exact for small steps. Behavioural quality keeps improving well past the raw-weight edge.</div>
+        </div>
+        <div class="finding">
+          <div class="val">refuted</div>
+          <div class="desc"><b>We killed our own formula, on our own rules.</b> A candidate closed-form law for that frontier fit every existing cell within ~12%. We froze it, pre-registered exact pass/fail thresholds, and re-tested on new configurations. It failed twice at the margin — one prediction off by 25.4% against a ±25% gate, and R² = 0.9791 against a 0.98 gate. We count it refuted and do not use it, even though it out-predicted both rival formulas 4–5×. The failed test paid for itself: it revealed the frontier's constant depends strongly on run length, which the formula missed entirely. A rescaled version reconciles the numbers to 18% — and is now a flagged observation awaiting its own pre-registered test.</div>
+        </div>
+      </div>
+
+      <h3>The cost caveat, reported rather than buried</h3>
+      <p>The converter currently costs <strong>3.8× to 38.6× retraining</strong> under our declared accounting rules, down from 25×–713× at first build. At this scale it beats retraining on cost for nothing, and we say so plainly. Of the two efficiency ideas declared before any cost claim, one worked exactly as hoped and the other was honestly closed by the pre-registered negative result above. What remains open is structural: keep-the-largest-corrections estimators, and a measured trend suggesting sampling gets <em>easier</em> as histories diverge further — a scale question, flagged rather than claimed.</p>
+      <div class="thesis">
+        <span class="tag">Framing discipline</span>
+        Possible is not the same as cheap. A cost that exceeds retraining is a measurement of the phase boundary, not something to hide. And an impossibility result is a first-class outcome, not a failure.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. BREADTH ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">V</span>Why it is broad</div>
+    <div class="body-col">
+      <h2>This is not a paper about data ordering</h2>
+      <p>The fair worry is that shuffling data is a niche. Data order is one coordinate of a much larger object — the <strong>optimization history</strong> — and the framework is generic in three independent ways.</p>
+
+      <h3>Broad in what counts as history</h3>
+      <p>The same machinery covers curriculum design, choice of optimizer, learning-rate schedules, data replay, augmentation schedules, and the staged pipelines behind instruction-tuning, RLHF, and alignment. Any two runs that share ingredients but differ in how they were combined are a valid pair for our question.</p>
+
+      <h3>Broad in optimizer and architecture</h3>
+      <p>Nothing is tied to a network shape. One deliverable is precisely that results <em>stratify by optimizer class</em>: which training choices leave history correctable, and which burn it in permanently. The plain → momentum → Adam chain is the first proved instance, now numerically confirmed end to end.</p>
+
+      <h3>Broad in what it is good for</h3>
+      <ul class="plain">
+        <li><b>Unlearning and its regulatory verification.</b> When a law requires that a user's data be deleted, is the influence actually erasable — or path-burned? The impossibility floor is a direct tool for answering “no method of this class can remove this, at any budget.”</li>
+        <li><b>Reproducibility.</b> How much does run-to-run history variation change behaviour, and can it be corrected after the fact instead of by re-running?</li>
+        <li><b>Merging and editing.</b> Why do some merges work and others fail? A cost-and-limit law over histories explains which combinations are reachable.</li>
+        <li><b>Continual learning.</b> When tasks arrive in sequence, what is permanently burned in versus still correctable?</li>
+        <li><b>Training as an audit trail.</b> What does a finished model reveal — or provably fail to reveal — about how it was made?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 6. RISKS ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">VI</span>Risks</div>
+    <div class="body-col">
+      <h2>What could go wrong, and what we are doing about it</h2>
+      <div class="full">
+        <details class="risk">
+          <summary>Reviewers call it incremental</summary>
+          <p>Our own novelty audit flagged this as the single largest risk for the original framing. We fixed it structurally, not cosmetically, by rebuilding the core around the cost-and-limit law — the one thing that provably subsumes the nearest prior works as special cases.</p>
+        </details>
+        <details class="risk">
+          <summary>The question is secretly already answered</summary>
+          <p>Estimated low but nonzero, and treated as a hard gate before spending any compute: we read both gating papers end to end, including appendices, and logged exactly what each does and does not do. We re-run a targeted preprint check before the large-scale phase, since a fast follow-up could close the gap.</p>
+        </details>
+        <details class="risk">
+          <summary>Hidden overlap we have not found</summary>
+          <p>Real and nonzero. Mitigated by the end-to-end reads, an explicit map of adjacent fields, and preemptive citation of the earlier local-quantity work so the lineage is transparent rather than discovered by a reviewer.</p>
+        </details>
+        <details class="risk">
+          <summary>Everything so far is tiny-scale</summary>
+          <p>True today — a few hundred parameters. That was deliberate: cheapest-first smoke testing of the exact pipeline. The scale-up path is defined and uses the public PolyPythias runs, so we do not pretrain from scratch.</p>
+        </details>
+        <details class="risk">
+          <summary>The converter is more expensive than retraining</summary>
+          <p>True and reported openly. The remaining levers are named, the fixed overhead shrinks relative to retraining as models grow, and even if conversion stays expensive, the cost curve <em>is</em> the phase-boundary measurement — which is itself the contribution.</p>
+        </details>
+        <details class="risk">
+          <summary>The impossibility floor covers only a restricted method class</summary>
+          <p>True. Extending it from fixed-direction methods to methods that adapt their reachable directions is open. It is stated as open — and the restricted case already contains a published theorem as a special case, which stands on its own.</p>
+        </details>
+      </div>
+
+      <h3>Why this fits a top-tier venue</h3>
+      <p>A candidate new quantitative law rather than a new gadget; impossibility results as a first-class outcome, which NeurIPS, ICML, and ICLR actively reward; and an optimizer classification tied to reversibility, with the first instance already proved and numerically confirmed. The area is demonstrably live — our two nearest neighbours are an ICML 2026 paper and a 2025 theory paper — and we occupy a branch that one of them names as unexplored.</p>
+    </div>
+  </section>
+
+  <!-- ============ 7. REFS ============ -->
+  <section class="section">
+    <div class="rail"><span class="num">VII</span>References</div>
+    <div class="body-col">
+      <ol class="refs full">
+        <li>Sweeney. <span class="t">The Geometry of Sequential Learning: Lie-Bracket Prediction of Transfer Order.</span> ICML 2026. arXiv:2606.24993.</li>
+        <li>Yu, He, Goyal, Arora. <span class="t">On the Impossibility of Retrain Equivalence in Machine Unlearning.</span> 2025. arXiv:2510.16629.</li>
+        <li>Xu. <span class="t">Low-Dimensional Execution Manifolds in Transformer Learning Dynamics: Evidence from Modular Arithmetic Tasks.</span> 2026. arXiv:2602.10496.</li>
+        <li>Sweeney. <span class="t">Optimizer Memory Makes Shuffle Order a First-Order Source of Fine-Tuning Noise.</span> 2026. arXiv:2606.29554.</li>
+        <li>Goodbrake. <span class="t">Unnatural Algorithms.</span> 2023. arXiv:2312.04739.</li>
+        <li>Rukhovich, Podolskiy, Piontkovskaya. <span class="t">Commute Your Domains: Trajectory Optimality Criterion for Multi-Domain Learning.</span> 2025. arXiv:2501.15556.</li>
+        <li><span class="t">PolyPythias.</span> ICLR 2025. arXiv:2503.09543. A public suite of 45 training runs varying seed and data order over fixed Pythia data.</li>
+        <li>TracIn (influence tracing, which assumes order-independence), the NTK / lazy regime, and the adjacent literatures named above — unlearning, model editing, task arithmetic, linear mode connectivity, influence functions, continual learning, curriculum learning — cited as neighbours we delimit against; canonical references attached in the full paper.</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="colophon">
+    <span>Project Palimpsest</span>
+    <span>Novelty &amp; generalizability brief</span>
+    <span>All figures at pilot scale unless stated</span>
+  </div>
+
+</div>
