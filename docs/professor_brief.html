@@ -381,7 +381,7 @@
 <div class="sheet">
 
   <header class="masthead">
-    <div class="eyebrow">Research brief · Project Palimpsest · revised 21 July 2026 with the F-014 checkpoint-integrity finding</div>
+    <div class="eyebrow">Research brief · Project Palimpsest · revised 22 July 2026 with the first real-scale measurement</div>
     <h1>Can a trained model be rewritten instead of retrained?</h1>
     <p class="sub">Two models, same data, different training histories. What does it cost to turn one into the other — and when is that flatly impossible?</p>
     <div class="byline">
@@ -494,11 +494,11 @@
             <tr><th scope="row">Rukhovich 2025 — local order criterion</th><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td><td>partial</td></tr>
             <tr><th scope="row">PolyPythias 2025 — 45-run testbed</th><td>dataset</td><td>no</td><td>no</td><td>no</td><td>—</td><td class="yes">yes</td></tr>
             <tr><th scope="row">Model merging / editing / continual learning</th><td>no</td><td>endpoints only</td><td>no</td><td>no</td><td>no</td><td class="yes">yes</td></tr>
-            <tr class="ours"><th scope="row">This project</th><td class="yes">yes</td><td class="yes">yes, built</td><td class="yes">yes, first data point</td><td class="yes">yes, proved floor</td><td class="yes">yes, by design</td><td>not yet — pilot; PolyPythias scale-up partially degraded (control arm void per F-014)</td></tr>
+            <tr class="ours"><th scope="row">This project</th><td class="yes">yes</td><td class="yes">yes, built — pilot scale</td><td class="yes">yes, first data point — pilot scale</td><td class="yes">yes, proved floor</td><td class="yes">yes, by design</td><td>partly — conversion is pilot-scale only; the order-effect <em>measurement</em> now runs at 160M / 300B tokens</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="caption">“Adds up along the whole path” means the quantity accumulates over training rather than being computed at a single point. “Hard limit” means the work identifies when conversion is impossible at <em>any</em> budget. The last cell is the honest one: scale-up is the declared next step, using the public PolyPythias runs rather than pretraining from scratch. That path is currently <em>partially degraded, not clean</em>: our own audit of the PolyPythias 160M checkpoints — run before drawing any conclusion — found the init-only control arm void beyond step 0 (all four decoupled runs numerically identical from step 1), so a replacement control is a pending decision; the order-only arm survives, and the cause is upstream and not yet determined.</p>
+      <p class="caption">“Adds up along the whole path” means the quantity accumulates over training rather than being computed at a single point. “Hard limit” means the work identifies when conversion is impossible at <em>any</em> budget. The last cell is the honest one: scale-up is the declared next step, using the public PolyPythias runs rather than pretraining from scratch. That path is currently <em>partially degraded, not clean</em>: our own audit of the PolyPythias 160M checkpoints — run before drawing any conclusion — found the init-only control arm void beyond step 0 (all four decoupled runs numerically identical from step 1), so a replacement control is a pending decision; the cause is upstream, not yet determined, and reported to the maintainers. The order-only arm survives and has now delivered the measurement in Section IV.</p>
 
       <h3>Fields we sit next to, and are not</h3>
       <ul class="plain">
@@ -562,6 +562,50 @@
         </div>
       </div>
 
+      <h3>Measured at real scale — 160 million parameters, 300 billion tokens</h3>
+      <p>The results above are the smoke test. In July 2026 we ran the first real-scale measurement. It is a <em>measurement</em>, not a conversion: it asks how much of the difference between two large trained models is due to training <strong>order</strong> alone. We took two public Pythia-160M language models trained on the same 300 billion tokens from the identical starting point, differing only in the order the data arrived — the cleanest same-ingredients/different-history pair that exists publicly — plus a reference pair differing in <em>both</em> the starting point and the order. At twelve snapshots spanning training we measured how differently each pair predicts the next word, over 98,304 evaluated positions. Thirty-six cells, none void, every hypothesis and threshold committed to the repository before a single checkpoint was downloaded.</p>
+      <p>A number like this is easy to fool yourself with, so we bracketed it before interpreting it. The <strong>floor</strong>: how different are two snapshots of the <em>same</em> run, a thousand steps apart? Below that is noise, not history. The <strong>ceiling</strong>: how different is a 160M model from a 410M one? At or above that would mean reordering the data is as big as changing the model.</p>
+
+      <div class="full">
+        <div class="finding">
+          <div class="val">3.81×</div>
+          <div class="desc"><b>Order alone clears the noise floor.</b> At the end of training the order-only pair measures <b>0.290461</b> against a floor of <b>0.076275</b>. Data order by itself leaves a behavioural difference comfortably larger than the run's own step-to-step wobble. <span class="chip held">pre-registered · passed</span></div>
+        </div>
+        <div class="finding">
+          <div class="val">0.46 ceiling</div>
+          <div class="desc"><b>And stays under the ceiling.</b> The 160M-vs-410M size gap measures <b>0.460360</b>, so the order-only difference is about <b>63%</b> of a 2.5×-model-size difference — large, but not as large as changing the model. <span class="chip held">pre-registered · passed</span></div>
+        </div>
+        <div class="finding">
+          <div class="val">≈ 0.95</div>
+          <div class="desc"><b>Late in training, order alone accounts for roughly 95% of what order <em>plus</em> a different starting point produce together.</b> The order-only share of the joint difference rises steadily: ≈0 at the earliest snapshots, <b>0.319</b> at step 256, <b>0.546</b> at 1,000, <b>0.857</b> at 4,000, <b>0.932</b> at 16,000, then between <b>0.943</b> and <b>0.993</b> across the last three snapshots, ending at <b>0.949</b>. The rise is not perfectly monotone — the final step ticks down from 0.993 to 0.949. Read plainly: by mid-training, giving the second model an entirely different random starting point on top of the reordered data buys almost no extra difference in behaviour. The starting point's fingerprint washes out; order's does not.</div>
+        </div>
+        <div class="finding">
+          <div class="val">behaviour, not weights</div>
+          <div class="desc"><b>The models do not converge internally.</b> In raw-weight terms the pairs never approach each other — the order-only pair's weight distance grows to 0.954 (peaking at 0.966 mid-training), and the joint pair stays at full independent-starting-point scale throughout (1.247 → 1.408). What converges is what the models <em>do</em>. That is the regime the project declared in advance as the claim-bearing one.</div>
+        </div>
+        <div class="finding">
+          <div class="val">exact</div>
+          <div class="desc"><b>The instrument certified itself.</b> A pre-declared reproducibility cell re-ran one measurement from scratch and reproduced it exactly, and a tripwire written in advance to catch the checkpoint defect described in Section III stayed clean across the whole grid. <span class="chip held">confirmed</span></div>
+        </div>
+      </div>
+
+      <div class="thesis">
+        <span class="tag">Caveats that travel with these numbers</span>
+        One measurement, with real limits — quote the number with these or not at all.
+      </div>
+      <ul class="plain full">
+        <li><b>One pair per arm — no error bars.</b> A single order-only pair and a single joint pair. We cannot yet separate “the order-only share is 0.95” from “this particular pair of seeds gave 0.95”.</li>
+        <li><b>Late training only.</b> The noise floor is strongly time-dependent: adjacent-snapshot drift is <b>0.680</b> early (steps 1,000→2,000), <b>0.141</b> mid-training, <b>0.076</b> at the end. The early floor exceeds <em>every</em> pair value at <em>every</em> point on the curve, so snapshots before roughly step 1,000 support no claim about the pairs at all.</li>
+        <li><b>We could not measure the starting point's own contribution.</b> No usable public control exists for “same order, different starting point” — the candidate failed our own audit (Section III). So the joint-minus-order-only difference mixes the starting point's own effect with its interaction with order, and the prediction about <em>when</em> each accumulates is <b>untested</b> — neither confirmed nor refuted.</li>
+        <li><b>The gate we passed is weaker than the one we registered.</b> Losing that control arm forced us to re-register the joint-dominance test against one surviving comparison instead of two. We passed the weaker version, and say so.</li>
+        <li><b>The evaluation text is from the training distribution, not held out.</b> Registered in advance as acceptable because the measurement compares two models against <em>each other</em> rather than testing memorization — but nothing here speaks to generalization.</li>
+        <li><b>For scale, two completely untrained models already differ by 0.3995</b> on this measure — the same order of magnitude as the end-of-training values (0.29–0.31). The measure has a naturally large baseline, which is precisely why the floor and ceiling brackets are load-bearing rather than decorative.</li>
+        <li><b>One oddity we do not explain.</b> The joint pair's curve is non-monotone: 0.400 untrained, dipping to 0.186 at step 256 as both runs learn the same basic statistics of language, then recovering to about 0.31. Recorded, not understood.</li>
+      </ul>
+
+      <p><strong>Relation to prior work — this confirms and extends; it does not discover.</strong> That the earliest phase of training decides run-to-run variation, and that networks become insensitive to their own starting conditions after a short prefix, is established: it is the substance of Frankle, Dziugaite, Roy and Carbin's instability analysis (2020) and the early-phase-of-training literature, and the PolyPythias suite we used was itself built to study seed stability. Our contribution here is narrower and should be stated narrowly — a <em>behaviour-space</em> decomposition, at 160M parameters and 300B tokens, of how much run-to-run difference is due to order alone across the whole of training.</p>
+      <p><strong>What this is not.</strong> It is not a conversion, and not a cost-law data point at scale. Our converter has not been run at 160M parameters. This establishes that the thing we propose to convert — an order-induced difference — is real, sizeable and durable at real scale. Whether it can be converted <em>away</em>, and at what cost, is still a pilot-scale result only, and is the next open question.</p>
+
       <h3>The cost caveat, reported rather than buried</h3>
       <p>The converter currently costs <strong>3.8× to 38.6× retraining</strong> under our declared accounting rules, down from 25×–713× at first build. At this scale it beats retraining on cost for nothing, and we say so plainly. Of the two efficiency ideas declared before any cost claim, one worked exactly as hoped and the other was honestly closed by the pre-registered negative result above. What remains open is structural: keep-the-largest-corrections estimators, and a measured trend suggesting sampling gets <em>easier</em> as histories diverge further — a scale question, flagged rather than claimed.</p>
       <div class="thesis">
@@ -614,8 +658,16 @@
           <p>Real and nonzero. Mitigated by the end-to-end reads, an explicit map of adjacent fields, and preemptive citation of the earlier local-quantity work so the lineage is transparent rather than discovered by a reviewer.</p>
         </details>
         <details class="risk">
-          <summary>Everything so far is tiny-scale</summary>
-          <p>True today — a few hundred parameters. That was deliberate: cheapest-first smoke testing of the exact pipeline. The scale-up path uses the public PolyPythias runs, so we do not pretrain from scratch. Honest status: that path is partially degraded, not clean — an audit of the PolyPythias 160M checkpoints (our own, before any conclusion was drawn) found the init-only control arm void beyond step 0, so a replacement control is pending; the order-only arm survives, and the anomaly was caught by gate design rather than propagating into a claim.</p>
+          <summary>The conversion results are all tiny-scale</summary>
+          <p>Partly true, and now precisely bounded. Every <em>conversion</em> result is on a few-hundred-parameter network; the first <em>measurement</em> result is at 160M parameters and 300B tokens (Section IV). The tiny scale was deliberate: cheapest-first smoke testing of the exact pipeline, and the scale-up path uses the public PolyPythias runs so we do not pretrain from scratch. Honest status: that path is partially degraded, not clean — an audit of the PolyPythias 160M checkpoints (our own, before any conclusion was drawn) found the init-only control arm void beyond step 0, so a replacement control is pending; the order-only arm survives and has now been run end to end, and the anomaly was caught by gate design rather than propagating into a claim. Running the <em>converter</em> at 160M remains the open scale-up step.</p>
+        </details>
+        <details class="risk">
+          <summary>The real-scale measurement rests on a single model pair per arm</summary>
+          <p>True, and the main limitation of Section IV. There are no error bars, so “order alone accounts for ~95% of joint divergence late in training” cannot yet be separated from a property of these particular seeds. Additional seed pairs are the obvious next spend. The brackets that make the number interpretable — a same-run noise floor and a cross-model-size ceiling — were fixed in advance rather than chosen afterwards. Equally live: the separation of scales holds only <em>late</em> in training, because the noise floor early in training exceeds every pair value we measured.</p>
+        </details>
+        <details class="risk">
+          <summary>No init-only control exists, so one arm of the design is unavailable</summary>
+          <p>True — and a limitation of the public artifacts rather than of our method. The only public candidate for a “same order, different starting point” pair failed our own continuity audit, and no replacement exists in the open. The consequence is stated wherever the numbers appear: the joint-minus-order-only difference confounds the starting point's own effect with its interaction with order, and the prediction about <em>when</em> order- versus init-differences accumulate is untested at real scale — neither confirmed nor refuted. We have asked the one group known to hold suitable weights; if they do not materialize, training a small matched pair ourselves is the fallback, priced and deferred.</p>
         </details>
         <details class="risk">
           <summary>The converter is more expensive than retraining</summary>
@@ -644,6 +696,8 @@
         <li>Goodbrake. <span class="t">Unnatural Algorithms.</span> 2023. arXiv:2312.04739.</li>
         <li>Rukhovich, Podolskiy, Piontkovskaya. <span class="t">Commute Your Domains: Trajectory Optimality Criterion for Multi-Domain Learning.</span> 2025. arXiv:2501.15556.</li>
         <li><span class="t">PolyPythias.</span> ICLR 2025. arXiv:2503.09543. A public suite of 45 training runs varying seed and data order over fixed Pythia data.</li>
+        <li>Frankle, Dziugaite, Roy, Carbin. <span class="t">Linear Mode Connectivity and the Lottery Ticket Hypothesis.</span> ICML 2020. arXiv:1912.05671. Instability analysis — the earliest phase of training is where sensitivity to SGD noise, including data order, is decided.</li>
+        <li>Frankle, Schwab, Morcos. <span class="t">The Early Phase of Neural Network Training.</span> ICLR 2020. arXiv:2002.10365.</li>
         <li>TracIn (influence tracing, which assumes order-independence), the NTK / lazy regime, and the adjacent literatures named above — unlearning, model editing, task arithmetic, linear mode connectivity, influence functions, continual learning, curriculum learning — cited as neighbours we delimit against; canonical references attached in the full paper.</li>
       </ol>
     </div>
@@ -652,7 +706,7 @@
   <div class="colophon">
     <span>Project Palimpsest</span>
     <span>Novelty &amp; generalizability brief</span>
-    <span>All figures at pilot scale unless stated</span>
+    <span>Pilot scale unless stated · Section IV reports one 160M / 300B measurement</span>
   </div>
 
 </div>
