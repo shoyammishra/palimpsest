@@ -42,7 +42,10 @@ def resolve_out_path():
     existing = sorted(RAW.glob("e009_divergence_*.json"))
     return existing[-1] if existing else today
 
-GRID = [0, 1, 4, 16, 64, 256, 512, 1000, 4000, 16000, 64000, 128000, 143000]
+# step1 dropped 2026-07-21: G-vi found all four decoupled repos numerically
+# identical at that revision (F-014), so every pair cell there is void upstream.
+# Recorded step1 cells in the 2026-07-20 JSON are kept as-is.
+GRID = [0, 4, 16, 64, 256, 512, 1000, 4000, 16000, 64000, 128000, 143000]
 N_BLOCKS, BLOCK = 48, 2048
 
 PAIRS = {

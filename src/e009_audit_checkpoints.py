@@ -29,11 +29,16 @@ with inf/nan.
 
 Read-only: forward-free, no training, no gradients. Uses whatever is in the HF
 cache; set HF_HUB_OFFLINE=1 to guarantee no network spend.
+
+`--set=j1` audits the never-tested joint pair instead (D-014 cheapest-first
+step); the default set is unchanged so the recorded 2026-07-20 run stays
+reproducible.
 """
 
 import datetime
 import json
 import os
+import sys
 from pathlib import Path
 
 import torch
@@ -58,6 +63,29 @@ REVS = ["step0", "step1", "step4", "step16", "step64", "step256"]
 # pairs as declared in D-013 / E-009
 PAIRS = {"P1": ("ds1", "ds2"), "C1": ("ws1", "ws2")}
 REF = "ds1"  # reference init for the continuity denominator
+
+# --set=j1: the joint pair, never audited (D-014 fact 3). ds1 stays in the set
+# as the distinct-init reference for the continuity denominator, and because
+# the ds1|s{1,2} cells expose the F-014 signature (collapse onto the data-seed
+# family) directly. step0/1/4 only: the recorded defect was decisive by step4,
+# and this caps new downloads at ~2 GB.
+J1_SET = {
+    "REPOS": {
+        "ds1": "EleutherAI/pythia-160m-data-seed1",
+        "s1": "EleutherAI/pythia-160m-seed1",
+        "s2": "EleutherAI/pythia-160m-seed2",
+    },
+    "REVS": ["step0", "step1", "step4"],
+    "PAIRS": {"J1": ("s1", "s2")},
+    "REF": "ds1",
+}
+
+SET_NAME = "default"
+if "--set=j1" in sys.argv[1:]:
+    SET_NAME = "j1"
+    REPOS, REVS, PAIRS, REF = (
+        J1_SET["REPOS"], J1_SET["REVS"], J1_SET["PAIRS"], J1_SET["REF"])
+    OUT = RAW / f"e009_ckpt_audit_j1_{DATE}.json"
 
 
 def load_params(repo, rev):
@@ -94,7 +122,7 @@ def main():
         "experiment": "E-009 phase 0b (checkpoint trajectory-continuity audit)",
         "date": DATE, "torch": torch.__version__,
         "offline": os.environ.get("HF_HUB_OFFLINE") == "1",
-        "repos": REPOS, "revisions": REVS,
+        "repo_set": SET_NAME, "repos": REPOS, "revisions": REVS,
         "buffer_suffixes_excluded": list(BUFFER_SUFFIXES),
         "cells": {}, "gates": {},
     }
