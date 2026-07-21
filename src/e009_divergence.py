@@ -48,11 +48,16 @@ def resolve_out_path():
 GRID = [0, 4, 16, 64, 256, 512, 1000, 4000, 16000, 64000, 128000, 143000]
 N_BLOCKS, BLOCK = 48, 2048
 
+# C1 removed 2026-07-21 per D-015: arm void beyond step0 (F-014) — no further
+# spend on it. Recorded 2026-07-20 C1 cells stay in the JSON, citable only as
+# void; C1@0 = 1.247474 is the retained standalone init-distance reference.
 PAIRS = {
     "P1": ("EleutherAI/pythia-160m-data-seed1", "EleutherAI/pythia-160m-data-seed2"),
-    "C1": ("EleutherAI/pythia-160m-weight-seed1", "EleutherAI/pythia-160m-weight-seed2"),
     "J1": ("EleutherAI/pythia-160m-seed1", "EleutherAI/pythia-160m-seed2"),
 }
+# D-015 pre-registered tripwire: an independent-init pair must sit near ~1.25 in
+# d_theta at early t; family-collapse (F-014's signature) would show ~1e-2.
+J1_TRIPWIRE = {"t_min": 4, "t_max": 1000, "d_theta_min": 0.5}
 FLOOR_RUN = "EleutherAI/pythia-160m-data-seed1"
 FLOOR_ANCHORS = [(1000, 2000), (16000, 17000), (142000, 143000)]
 CEILING = ("EleutherAI/pythia-160m", "EleutherAI/pythia-410m", 143000)
@@ -207,6 +212,18 @@ def main():
             cells[key] = {"void": True, "error": repr(e)}
             print(f"  VOID: {e!r}", flush=True)
         save()
+
+    # D-015 tripwire: J1 must look like an independent-init pair at early t
+    tw = J1_TRIPWIRE
+    tripped = {
+        k: c["d_theta_rel"] for k, c in cells.items()
+        if k.startswith("J1@") and not c.get("void")
+        and tw["t_min"] <= int(k.split("@")[1]) <= tw["t_max"]
+        and c.get("d_theta_rel") is not None
+        and c["d_theta_rel"] < tw["d_theta_min"]
+    }
+    results["j1_tripwire"] = {"config": tw, "tripped_cells": tripped,
+                              "j1_arm_void": bool(tripped)}
 
     # pre-declared reproducibility verdict
     if "P1@16000" in cells and "repro:P1@16000" in cells and \
