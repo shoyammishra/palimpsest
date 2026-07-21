@@ -1,0 +1,162 @@
+{
+  "experiment": "E-009 phase 0b (checkpoint trajectory-continuity audit)",
+  "date": "2026-07-22",
+  "torch": "2.13.0+cu126",
+  "offline": false,
+  "repo_set": "main",
+  "repos": {
+    "main": "EleutherAI/pythia-160m",
+    "ds1": "EleutherAI/pythia-160m-data-seed1",
+    "ws1": "EleutherAI/pythia-160m-weight-seed1"
+  },
+  "revisions": [
+    "step0",
+    "step1",
+    "step4",
+    "step16",
+    "step64",
+    "step256"
+  ],
+  "buffer_suffixes_excluded": [
+    "attention.bias",
+    "masked_bias",
+    "inv_freq"
+  ],
+  "cells": {
+    "main|ds1@step0": {
+      "rel_l2": 0.0,
+      "n_keys": 148,
+      "n_differing": 0,
+      "max_abs_diff": 0.0
+    },
+    "main|ws1@step0": {
+      "rel_l2": 1.2475242885355475,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.18798828125
+    },
+    "ds1|ws1@step0": {
+      "rel_l2": 1.2475242885355475,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.18798828125
+    },
+    "main|ds1@step1": {
+      "rel_l2": 0.0,
+      "n_keys": 148,
+      "n_differing": 0,
+      "max_abs_diff": 0.0
+    },
+    "main|ws1@step1": {
+      "rel_l2": 0.0,
+      "n_keys": 148,
+      "n_differing": 0,
+      "max_abs_diff": 0.0
+    },
+    "ds1|ws1@step1": {
+      "rel_l2": 0.0,
+      "n_keys": 148,
+      "n_differing": 0,
+      "max_abs_diff": 0.0
+    },
+    "main|ds1@step4": {
+      "rel_l2": 2.4528318715419334e-05,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 7.62939453125e-06
+    },
+    "main|ws1@step4": {
+      "rel_l2": 5.0427765130057006e-05,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 5.7220458984375e-06
+    },
+    "ds1|ws1@step4": {
+      "rel_l2": 5.234155225004593e-05,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 7.62939453125e-06
+    },
+    "main|ds1@step16": {
+      "rel_l2": 0.00038995860789622737,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 0.0001220703125
+    },
+    "main|ws1@step16": {
+      "rel_l2": 0.00040975037757780063,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 6.580352783203125e-05
+    },
+    "ds1|ws1@step16": {
+      "rel_l2": 0.0005304478403801428,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 0.0001220703125
+    },
+    "main|ds1@step64": {
+      "rel_l2": 0.003239201504918099,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.0009765625
+    },
+    "main|ws1@step64": {
+      "rel_l2": 0.0011488312670316335,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.0009765625
+    },
+    "ds1|ws1@step64": {
+      "rel_l2": 0.003373124056509292,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.0009765625
+    },
+    "main|ds1@step256": {
+      "rel_l2": 0.025419803919462504,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.019683837890625
+    },
+    "main|ws1@step256": {
+      "rel_l2": 0.013125108450313566,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.01983642578125
+    },
+    "ds1|ws1@step256": {
+      "rel_l2": 0.0251172043024077,
+      "n_keys": 148,
+      "n_differing": 148,
+      "max_abs_diff": 0.016632080078125
+    }
+  },
+  "gates": {
+    "G-v_trajectory_continuity": {
+      "pass": true,
+      "threshold": 0.5,
+      "violations": {}
+    },
+    "G-vi_pair_non_degeneracy": {
+      "pass": true,
+      "degenerate_cells": {}
+    }
+  },
+  "init_scale_vs_ref": {
+    "main": 1.2475242885355475,
+    "ds1": 1.2475242885355475
+  },
+  "continuity_ratio": {
+    "main@step1": 0.0,
+    "main@step4": 5.608254117335985e-05,
+    "main@step16": 0.001231960109824347,
+    "main@step64": 0.015208798455510559,
+    "main@step256": 0.12734105751920388,
+    "ds1@step1": 0.0,
+    "ds1@step4": 5.6247077401118106e-05,
+    "ds1@step16": 0.001232390082039583,
+    "ds1@step64": 0.015156969627647189,
+    "ds1@step256": 0.12762913617584462
+  }
+}
