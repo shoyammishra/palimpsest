@@ -111,11 +111,21 @@ def param_names(model):
     return [k for k, _ in model.named_parameters()]
 
 
+def blabel(key):
+    """E-011a block_labels with the transformers attribute-rename alias:
+    this transformers version names the output head 'lm_head.weight' where the
+    .bin checkpoints (and E-011a) say 'embed_out.weight' — same tensor, same
+    block; alias only, partition semantics unchanged."""
+    if key == "lm_head.weight":
+        return "embed_out", None
+    return block_labels(key)
+
+
 def type_keysets(names):
     """{type: set(param names)}; asserts the 8-type partition is complete."""
     sets = {t: set() for t in TYPES}
     for k in names:
-        typ, _ = block_labels(k)
+        typ, _ = blabel(k)
         assert typ in sets, f"unpartitioned param {k!r} -> {typ!r}"
         sets[typ].add(k)
     assert set().union(*sets.values()) == set(names)
@@ -123,7 +133,7 @@ def type_keysets(names):
 
 
 def layer_keyset(names, typ, layer):
-    return {k for k in names if block_labels(k) == (typ, layer)}
+    return {k for k in names if blabel(k) == (typ, layer)}
 
 
 def make_hybrid(base_model, donor_params, selection, alpha):
