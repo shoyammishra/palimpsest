@@ -381,7 +381,7 @@
 <div class="sheet">
 
   <header class="masthead">
-    <div class="eyebrow">Research brief · Project Palimpsest · 20 July 2026</div>
+    <div class="eyebrow">Research brief · Project Palimpsest · revised 21 July 2026 with the F-014 checkpoint-integrity finding</div>
     <h1>Can a trained model be rewritten instead of retrained?</h1>
     <p class="sub">Two models, same data, different training histories. What does it cost to turn one into the other — and when is that flatly impossible?</p>
     <div class="byline">
@@ -494,11 +494,11 @@
             <tr><th scope="row">Rukhovich 2025 — local order criterion</th><td>no</td><td>no</td><td>no</td><td>no</td><td>no</td><td>partial</td></tr>
             <tr><th scope="row">PolyPythias 2025 — 45-run testbed</th><td>dataset</td><td>no</td><td>no</td><td>no</td><td>—</td><td class="yes">yes</td></tr>
             <tr><th scope="row">Model merging / editing / continual learning</th><td>no</td><td>endpoints only</td><td>no</td><td>no</td><td>no</td><td class="yes">yes</td></tr>
-            <tr class="ours"><th scope="row">This project</th><td class="yes">yes</td><td class="yes">yes, built</td><td class="yes">yes, first data point</td><td class="yes">yes, proved floor</td><td class="yes">yes, by design</td><td>not yet — pilot</td></tr>
+            <tr class="ours"><th scope="row">This project</th><td class="yes">yes</td><td class="yes">yes, built</td><td class="yes">yes, first data point</td><td class="yes">yes, proved floor</td><td class="yes">yes, by design</td><td>not yet — pilot; PolyPythias scale-up partially degraded (control arm void per F-014)</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="caption">“Adds up along the whole path” means the quantity accumulates over training rather than being computed at a single point. “Hard limit” means the work identifies when conversion is impossible at <em>any</em> budget. The last cell is the honest one: scale-up is the declared next step, using the public PolyPythias runs rather than pretraining from scratch.</p>
+      <p class="caption">“Adds up along the whole path” means the quantity accumulates over training rather than being computed at a single point. “Hard limit” means the work identifies when conversion is impossible at <em>any</em> budget. The last cell is the honest one: scale-up is the declared next step, using the public PolyPythias runs rather than pretraining from scratch. That path is currently <em>partially degraded, not clean</em>: our own audit of the PolyPythias 160M checkpoints — run before drawing any conclusion — found the init-only control arm void beyond step 0 (all four decoupled runs numerically identical from step 1), so a replacement control is a pending decision; the order-only arm survives, and the cause is upstream and not yet determined.</p>
 
       <h3>Fields we sit next to, and are not</h3>
       <ul class="plain">
@@ -534,7 +534,7 @@
         </div>
         <div class="finding">
           <div class="val">1.0014</div>
-          <div class="desc"><b>It survives Adam.</b> Adam's normalization step could in principle have cancelled the momentum effect. It does not. Sharper still: with momentum switched fully <em>off</em>, Adam's <em>other</em> internal memory reproduced the first-order sensitivity on its own — exactly as our sketch argued. Plain, momentum, and Adam-family all land where the theory says. <span class="chip held">confirmed</span></div>
+          <div class="desc"><b>It survives Adam.</b> Adam's normalization step could in principle have cancelled the momentum effect. It does not — measured shrink-rate 1.0014 where theory predicts exactly 1, with size and direction matching an independently computed prediction to better than one part in ten thousand. Sharper still: with momentum switched fully <em>off</em>, Adam's <em>other</em> internal memory reproduced the first-order sensitivity on its own — exactly as our sketch argued. Plain, momentum, and Adam-family all land where the theory says. <span class="chip held">confirmed</span></div>
         </div>
         <div class="finding">
           <div class="val">15 digits</div>
@@ -558,7 +558,7 @@
         </div>
         <div class="finding">
           <div class="val">refuted</div>
-          <div class="desc"><b>We killed our own formula, on our own rules.</b> A candidate closed-form law for that frontier fit every existing cell within ~12%. We froze it, pre-registered exact pass/fail thresholds, and re-tested on new configurations. It failed twice at the margin — one prediction off by 25.4% against a ±25% gate, and R² = 0.9791 against a 0.98 gate. We count it refuted and do not use it, even though it out-predicted both rival formulas 4–5×. The failed test paid for itself: it revealed the frontier's constant depends strongly on run length, which the formula missed entirely. A rescaled version reconciles the numbers to 18% — and is now a flagged observation awaiting its own pre-registered test.</div>
+          <div class="desc"><b>We killed our own formula, on our own rules.</b> A candidate closed-form law for that frontier fit every existing cell within ~12%. We froze it, pre-registered exact pass/fail thresholds, and re-tested on new configurations. It failed twice at the margin — one prediction off by 25.4% against a ±25% gate, and R² = 0.9791 against a 0.98 gate. We count it refuted and do not use it, even though it out-predicted both rival formulas 4–5×. The failed test paid for itself: it revealed the frontier's constant depends strongly on run length — shrinking about 3.4× when the run doubles — which the formula missed entirely. A rescaled version (severity as a <em>fraction</em> of maximal disorder) reconciles the numbers to 18% — and is now a flagged observation awaiting its own pre-registered test. One more structural fact: <em>which</em> swaps occur, not just how many, changes the error by about 30% at matched severity — a lead for the theory, and a warning against one-number severity scales.</div>
         </div>
       </div>
 
@@ -615,7 +615,7 @@
         </details>
         <details class="risk">
           <summary>Everything so far is tiny-scale</summary>
-          <p>True today — a few hundred parameters. That was deliberate: cheapest-first smoke testing of the exact pipeline. The scale-up path is defined and uses the public PolyPythias runs, so we do not pretrain from scratch.</p>
+          <p>True today — a few hundred parameters. That was deliberate: cheapest-first smoke testing of the exact pipeline. The scale-up path uses the public PolyPythias runs, so we do not pretrain from scratch. Honest status: that path is partially degraded, not clean — an audit of the PolyPythias 160M checkpoints (our own, before any conclusion was drawn) found the init-only control arm void beyond step 0, so a replacement control is pending; the order-only arm survives, and the anomaly was caught by gate design rather than propagating into a claim.</p>
         </details>
         <details class="risk">
           <summary>The converter is more expensive than retraining</summary>

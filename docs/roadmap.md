@@ -20,8 +20,8 @@ Deliverable status: novelty evidence logged in docs/findings.md (F-001..F-004); 
 - 3–5 competing hypotheses with distinguishing predictions (spec items 5–8).
 
 ## M3 — Experimental program (spec Phases 1–5, cheapest-first)
-- M3.1 Pilot on tiny scale (TinyStories-class or small MLP/CNN) — exact pipeline smoke-tested before any larger run.
-- M3.2 Existing checkpoint suites: PolyPythias / Pythia / OLMo. No pretraining from scratch.
+- M3.1 Pilot on tiny scale (TinyStories-class or small MLP/CNN) — exact pipeline smoke-tested before any larger run. ✅ COMPLETE 2026-07-20 (E-000..E-008; F-007..F-013 — transport operator built, budget compressed O(KT)→O(K+T), sampling closed, K-3.1 validity edge mapped, edge-law refuted-as-stated).
+- M3.2 Existing checkpoint suites: PolyPythias / Pythia / OLMo. No pretraining from scratch. ✅ SCOPED (D-013 — PolyPythias 160M decoupled pairs P1/C1/J1 selected); 🚧 IN PROGRESS — BLOCKED (E-009 pre-registered and partially run; halted on open decision D-014 after F-014 found the init-only control arm void beyond step 0).
 - M3.3 Construct controlled history pairs (curriculum, optimizer, LR schedule, replay, augmentation) holding architecture/data/compute constant.
 - M3.4 Trajectory-information measurements (what is recoverable from θ_T / checkpoint sequences).
 - M3.5 Intervention: attempt history-to-history transport; measure generalization, not memorization.
