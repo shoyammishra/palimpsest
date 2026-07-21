@@ -64,6 +64,11 @@ REVS = ["step0", "step1", "step4", "step16", "step64", "step256"]
 PAIRS = {"P1": ("ds1", "ds2"), "C1": ("ws1", "ws2")}
 REF = "ds1"  # reference init for the continuity denominator
 
+# G-vi (pair non-degeneracy) skips the step0 check for pairs that SHARE their
+# init by construction (they are *supposed* to be identical at step0, so a zero
+# there is not degeneracy). Per pair name; overridden per --set.
+GVI_SKIP_REVS = {"P1": ["step0"]}
+
 # --set=j1: the joint pair, never audited (D-014 fact 3). ds1 stays in the set
 # as the distinct-init reference for the continuity denominator, and because
 # the ds1|s{1,2} cells expose the F-014 signature (collapse onto the data-seed
@@ -80,12 +85,40 @@ J1_SET = {
     "REF": "ds1",
 }
 
+# --set=main: E-010 phase 0 (D-016). The bonus order-only pairs (main, dsN)
+# need main's TRAJECTORY continuity gated (F-014), not just its step0 identity
+# (E-009 G-iii). main shares the data-seed init (G-iii: bitwise-equal to ds1 on
+# the 148 common params), so the distinct-init continuity denominator is a
+# weight-seed run (ws1, ~1.2475 away). main publishes pytorch_model.bin at every
+# revision (verified 2026-07-22), so the existing .bin loader is reused unchanged
+# — no format-agnostic loader needed. step0/1/4/16/64/256: G-vii is frozen on
+# {4,16,64,256}; step1 is included only to record the G-ix init-copy quirk.
+MAIN_SET = {
+    "REPOS": {
+        "main": "EleutherAI/pythia-160m",
+        "ds1": "EleutherAI/pythia-160m-data-seed1",
+        "ws1": "EleutherAI/pythia-160m-weight-seed1",
+    },
+    "REVS": ["step0", "step1", "step4", "step16", "step64", "step256"],
+    "PAIRS": {"P2": ("main", "ds1")},   # order-only; shares init at step0
+    "REF": "ws1",                        # distinct init -> cont denominator
+    # P2 shares init at step0 (G-iii) and step1 is a family-wide init copy that
+    # is void in the E-010 grid, so both are non-informative for non-degeneracy.
+    "GVI_SKIP_REVS": {"P2": ["step0", "step1"]},
+}
+
 SET_NAME = "default"
 if "--set=j1" in sys.argv[1:]:
     SET_NAME = "j1"
     REPOS, REVS, PAIRS, REF = (
         J1_SET["REPOS"], J1_SET["REVS"], J1_SET["PAIRS"], J1_SET["REF"])
     OUT = RAW / f"e009_ckpt_audit_j1_{DATE}.json"
+elif "--set=main" in sys.argv[1:]:
+    SET_NAME = "main"
+    REPOS, REVS, PAIRS, REF = (
+        MAIN_SET["REPOS"], MAIN_SET["REVS"], MAIN_SET["PAIRS"], MAIN_SET["REF"])
+    GVI_SKIP_REVS = MAIN_SET["GVI_SKIP_REVS"]
+    OUT = RAW / f"e009_ckpt_audit_main_{DATE}.json"
 
 
 def load_params(repo, rev):
@@ -181,7 +214,7 @@ def main():
     degenerate = {}
     for pname, (a, b) in PAIRS.items():
         for rev in REVS:
-            if rev == "step0" and pname == "P1":
+            if rev in GVI_SKIP_REVS.get(pname, []):
                 continue  # P1 shares its init by construction (G-i)
             c = out["cells"].get(f"{a}|{b}@{rev}") or out["cells"].get(f"{b}|{a}@{rev}")
             if c and not c.get("void") and c["n_differing"] == 0:
