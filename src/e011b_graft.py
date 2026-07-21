@@ -162,10 +162,11 @@ def make_hybrid(base_model, donor_params, selection, alpha):
 
 
 def sel_norm2(base_params, donor_params, selection):
-    """||Delta restricted to selection||^2 in float64."""
+    """||Delta restricted to selection||^2 in float64 (device-robust, CPU)."""
     s = 0.0
     for k, sel in selection.items():
-        d = (donor_params[k].double() - base_params[k].double())
+        d = (donor_params[k].detach().double().cpu()
+             - base_params[k].detach().double().cpu())
         if sel is True:
             s += float(d.pow(2).sum())
         else:
@@ -174,7 +175,7 @@ def sel_norm2(base_params, donor_params, selection):
 
 
 def state_norm(model):
-    return math.sqrt(sum(float(v.double().pow(2).sum())
+    return math.sqrt(sum(float(v.detach().double().pow(2).sum())
                          for v in model.state_dict().values()))
 
 
@@ -279,6 +280,11 @@ def main():
         Materialize + d_theta on CPU, then GPU forward with 2 models peak."""
         if key in cells:
             return cells[key]
+        # invariant: originals on CPU for materialization + d_theta arithmetic
+        model_A.to("cpu")
+        model_B.to("cpu")
+        if device == "cuda":
+            torch.cuda.empty_cache()
         m_h = make_hybrid(base_model, donor, selection, alpha)
         dtr, _ = d_theta_rel(m_h, base_model)          # CPU, certified
         norm_h = state_norm(m_h)
@@ -324,6 +330,7 @@ def main():
         if device == "cuda":
             cells["I3:ds2_vs_ds1"]["cuda_peak_bytes"] = int(
                 torch.cuda.max_memory_allocated())
+        model_A.to("cpu")
         model_B.to("cpu")
         if device == "cuda":
             torch.cuda.empty_cache()
@@ -358,6 +365,10 @@ def main():
 
     # (I-4) repro: fresh materialization of the designated cell
     if "repro:attn_qkv@a0.5" not in cells:
+        model_A.to("cpu")
+        model_B.to("cpu")
+        if device == "cuda":
+            torch.cuda.empty_cache()
         m_h = make_hybrid(model_A, params_B, sel_qkv, REPRO_ALPHA)
         prep_anchor(model_A)
         m_h.to(device)
