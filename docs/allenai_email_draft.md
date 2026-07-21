@@ -1,7 +1,9 @@
-# DRAFT — request to Ai2 for the signal-and-noise 1B seed-model weights (NOT SENT)
+# Request to Ai2 for the signal-and-noise 1B seed-model weights — **SENT 2026-07-21**
 
-Status: draft only. Sending is an outward-facing action and I have no mail capability
-in this environment — the user sends it. D-015 option-(b) track.
+Status: **sent** by the user on 2026-07-21 to `davidh@allenai.org`, D-015 option-(b)
+track. Awaiting reply. Text below is the version of record — do not edit it to reflect
+later findings; if the claims in it go stale, note that in a follow-up rather than
+rewriting what was sent.
 
 ## Recipient
 
