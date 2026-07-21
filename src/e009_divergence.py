@@ -28,8 +28,19 @@ from transformers import AutoTokenizer, GPTNeoXForCausalLM
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "results" / "raw"
 DATE = datetime.date.today().isoformat()
-OUT = RAW / f"e009_divergence_{DATE}.json"
 TOKENS_NPY = RAW / "e009_eval_tokens.npy"
+
+
+def resolve_out_path():
+    """Single resume target for this experiment: today's file if present, else
+    the most recent existing e009_divergence_*.json (append to it — never start
+    a second partial file), else a fresh today-stamped file. Date-stamped names
+    sort chronologically, so the last lexical match is the newest."""
+    today = RAW / f"e009_divergence_{DATE}.json"
+    if today.exists():
+        return today
+    existing = sorted(RAW.glob("e009_divergence_*.json"))
+    return existing[-1] if existing else today
 
 GRID = [0, 1, 4, 16, 64, 256, 512, 1000, 4000, 16000, 64000, 128000, 143000]
 N_BLOCKS, BLOCK = 48, 2048
@@ -79,14 +90,21 @@ def load_model(repo, step, device):
 
 
 def d_theta_rel(ma, mb):
+    """Relative L2 param distance. Returns (value, reason); value is None with a
+    reason when key sets or shapes differ (e.g. the cross-size ceiling cell) so
+    the caller keeps d_f rather than voiding the whole cell."""
     sa, sb = ma.state_dict(), mb.state_dict()
+    if set(sa) != set(sb):
+        return None, "key_mismatch"
     diff2 = na2 = nb2 = 0.0
     for k in sa:
+        if sa[k].shape != sb[k].shape:
+            return None, "shape_mismatch"
         ta, tb = sa[k].double(), sb[k].double()
         diff2 += (ta - tb).pow(2).sum().item()
         na2 += ta.pow(2).sum().item()
         nb2 += tb.pow(2).sum().item()
-    return diff2 ** 0.5 / (0.5 * (na2 ** 0.5 + nb2 ** 0.5))
+    return diff2 ** 0.5 / (0.5 * (na2 ** 0.5 + nb2 ** 0.5)), None
 
 
 @torch.no_grad()
@@ -123,7 +141,10 @@ def run_cell(repo_a, step_a, repo_b, step_b, tokens, device):
     ma = load_model(repo_a, step_a, device)
     mb = load_model(repo_b, step_b, device)
     out = d_f(ma, mb, tokens, device)
-    out["d_theta_rel"] = d_theta_rel(ma, mb)
+    val, reason = d_theta_rel(ma, mb)   # non-fatal: d_f must survive a mismatch
+    out["d_theta_rel"] = val
+    if reason is not None:
+        out["d_theta_reason"] = reason
     del ma, mb
     if device == "cuda":
         torch.cuda.empty_cache()
@@ -141,6 +162,11 @@ def main():
 
     tokens = build_eval_tokens()
 
+    OUT = resolve_out_path()
+    if OUT.exists():
+        print(f"resuming from {OUT}", flush=True)
+    else:
+        print(f"no prior file — creating {OUT}", flush=True)
     results = json.loads(OUT.read_text()) if OUT.exists() else {
         "experiment": "E-009 phase 1 (divergence curves)", "date": DATE,
         "device": device, "deterministic_algorithms": det,
@@ -168,8 +194,11 @@ def main():
         print(f"[{key}] {ra}@step{ta} vs {rb}@step{tb} ...", flush=True)
         try:
             cells[key] = run_cell(ra, ta, rb, tb, tokens, device)
+            dtr = cells[key]["d_theta_rel"]
+            dtr_s = f"{dtr:.6g}" if dtr is not None else \
+                f"n/a ({cells[key].get('d_theta_reason')})"
             print(f"  sym_kl={cells[key]['sym_kl']:.6g}  "
-                  f"d_theta={cells[key]['d_theta_rel']:.6g}  "
+                  f"d_theta={dtr_s}  "
                   f"disagree={cells[key]['disagree_rate']:.4f}", flush=True)
         except Exception as e:
             cells[key] = {"void": True, "error": repr(e)}

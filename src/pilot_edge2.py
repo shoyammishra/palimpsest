@@ -45,7 +45,7 @@ def arm_t64(theta0, batches, T=64):
     X_eval = np.random.default_rng(7).normal(size=(N_EVAL, D_IN))
     word_full = [int(t) for t in np.random.default_rng(102).permutation(T)]
     K_full = len(inversion_pairs(word_full))
-    cells, voids = {}, 0
+    cells = {}
     for s, eta in CELLS_T64:
         word = word_full if s == K_full else prefix_word(word_full, s, T)
         K = len(inversion_pairs(word))
@@ -54,10 +54,8 @@ def arm_t64(theta0, batches, T=64):
         cell = transport_cell(theta0, batches, eta, T, word, X_eval)
         if not cell["gap_f_above_noise"]:
             cell["VOID"] = "gap at noise floor"
-            voids += 1
         if cell["param_residual"] < 1 and cell["audit_median_rel_err"] > 0.02:
             cell["VOID"] = "audit gate failed at non-overshoot cell"
-            voids += 1
         rho, pred = cell["param_residual"], C_FROZEN * K * eta
         cell.update({
             "eta": eta, "pred_law": pred,
@@ -68,6 +66,7 @@ def arm_t64(theta0, batches, T=64):
         })
         cells[f"K{s}_eta{eta}"] = cell
     live = [c for c in cells.values() if "VOID" not in c]
+    voids = sum(1 for c in cells.values() if "VOID" in c)  # count void CELLS once
     out = {"cells": cells, "n_void": voids}
     if voids > 1:
         out["VERDICT_i"] = "INCONCLUSIVE (>1 void cell)"

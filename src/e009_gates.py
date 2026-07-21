@@ -105,14 +105,19 @@ def compare(a, b):
         mismatched.append(k)
         d = (ta.float() - tb.float()).abs()
         max_abs = max(max_abs, d.max().item())
-        denom = tb.float().abs().clamp_min(1e-12)
-        max_rel = max(max_rel, (d / denom).max().item())
+        # rel. to tensor L2 norm: the old per-element clamp_min(1e-12) denominator
+        # produced meaningless ~1e10 ratios against near-zero fp16 weights.
+        nrm = tb.float().norm().clamp_min(1e-12).item()
+        max_rel = max(max_rel, d.max().item() / nrm)
     out.update({
         "n_common": len(common), "n_bitwise_equal": n_equal,
         "n_mismatched": len(mismatched),
         "mismatched_tensors": mismatched[:20],
-        "max_abs_diff": max_abs, "max_rel_diff": max_rel,
-        "bitwise_identical": (keys_a == keys_b) and n_equal == len(common),
+        "max_abs_diff": max_abs, "max_abs_diff_over_norm": max_rel,
+        # params-identical is independent of storage-format keyset differences
+        # (buffers present in .bin but not .safetensors); keyset diff stays
+        # visible via same_keys / only_in_a / only_in_b above.
+        "params_identical": len(common) > 0 and n_equal == len(common),
         "file_sha256_equal": a["sha256"] == b["sha256"],
     })
     return out
@@ -165,9 +170,9 @@ def main():
         "gate_iv_training_config": fetch_training_config(),
     }
     results["verdict"] = {
-        "G_i_pass": results["gate_i_data_seeds"]["bitwise_identical"],
-        "G_ii_pass": not results["gate_ii_weight_seeds"]["bitwise_identical"],
-        "G_iii_main_in_P1_class": results["gate_iii_ds1_vs_main"]["bitwise_identical"],
+        "G_i_pass": results["gate_i_data_seeds"]["params_identical"],
+        "G_ii_pass": not results["gate_ii_weight_seeds"]["params_identical"],
+        "G_iii_main_in_P1_class": results["gate_iii_ds1_vs_main"]["params_identical"],
     }
 
     out_path = RAW / f"e009_gates_{DATE}.json"
