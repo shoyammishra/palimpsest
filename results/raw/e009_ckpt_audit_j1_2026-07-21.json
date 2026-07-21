@@ -1,0 +1,99 @@
+{
+  "experiment": "E-009 phase 0b (checkpoint trajectory-continuity audit)",
+  "date": "2026-07-21",
+  "torch": "2.13.0+cu126",
+  "offline": false,
+  "repo_set": "j1",
+  "repos": {
+    "ds1": "EleutherAI/pythia-160m-data-seed1",
+    "s1": "EleutherAI/pythia-160m-seed1",
+    "s2": "EleutherAI/pythia-160m-seed2"
+  },
+  "revisions": [
+    "step0",
+    "step1",
+    "step4"
+  ],
+  "buffer_suffixes_excluded": [
+    "attention.bias",
+    "masked_bias",
+    "inv_freq"
+  ],
+  "cells": {
+    "ds1|s1@step0": {
+      "rel_l2": 1.2473955741074492,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.20733642578125
+    },
+    "ds1|s2@step0": {
+      "rel_l2": 1.247529221701808,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.18310546875
+    },
+    "s1|s2@step0": {
+      "rel_l2": 1.2474357688206574,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.1893310546875
+    },
+    "ds1|s1@step1": {
+      "rel_l2": 1.2473955741074492,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.20733642578125
+    },
+    "ds1|s2@step1": {
+      "rel_l2": 1.247529221701808,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.18310546875
+    },
+    "s1|s2@step1": {
+      "rel_l2": 1.2474357688206574,
+      "n_keys": 148,
+      "n_differing": 50,
+      "max_abs_diff": 0.1893310546875
+    },
+    "ds1|s1@step4": {
+      "rel_l2": 1.24739557040303,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 0.20733642578125
+    },
+    "ds1|s2@step4": {
+      "rel_l2": 1.2475292191787362,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 0.18310546875
+    },
+    "s1|s2@step4": {
+      "rel_l2": 1.2474357684935102,
+      "n_keys": 148,
+      "n_differing": 123,
+      "max_abs_diff": 0.1893310546875
+    }
+  },
+  "gates": {
+    "G-v_trajectory_continuity": {
+      "pass": true,
+      "threshold": 0.5,
+      "violations": {}
+    },
+    "G-vi_pair_non_degeneracy": {
+      "pass": true,
+      "degenerate_cells": {}
+    }
+  },
+  "init_scale_vs_ref": {
+    "s1": 1.2473955741074492,
+    "s2": 1.247529221701808
+  },
+  "continuity_ratio": {
+    "s1@step1": 0.0,
+    "s1@step4": 5.6305049194499755e-05,
+    "s2@step1": 0.0,
+    "s2@step4": 5.6264401201164307e-05
+  }
+}
