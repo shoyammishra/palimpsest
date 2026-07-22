@@ -296,7 +296,7 @@ def run(base_model, base_params, ds2_T, ds1_142000, tokens, device, det,
         out["gates"]["I_df"] = {"pass": bool(idf_rel <= REL_IDF),
                                 "d_f": r["sym_kl"], "ref": TOTAL_F015,
                                 "rel_err": idf_rel, "threshold": REL_IDF,
-                                "ce_ds1": r["ce_b"], "ce_ds2": r["ce_a"]}
+                                "ce_ds1": r["ce_a"], "ce_ds2": r["ce_b"]}
         print(f"[I-df] d_f={r['sym_kl']:.10f} rel={idf_rel:.2e} "
               f"{'PASS' if idf_rel <= REL_IDF else 'FAIL'}", flush=True)
         save()
