@@ -1,0 +1,197 @@
+{
+  "experiment": "E-012 (R-3 recoverability ladder + Sigma_E lock-in; D-018)",
+  "date": "2026-07-22",
+  "commit": "fead9d87c3128b8a54cb492e8e39c31516a6b998",
+  "torch": "2.13.0+cu126",
+  "device": "cuda",
+  "deterministic_algorithms": true,
+  "offline": true,
+  "smoke": false,
+  "n_params": 162322944,
+  "n_param_tensors": 148,
+  "thresholds": {
+    "isigma_tol": 0.25,
+    "isigma_ce_max": 0.05,
+    "idf_tol": 0.001,
+    "irepro_tol": 1e-06,
+    "iranddir_tol": 0.005,
+    "m_gate": 0.05,
+    "rstar": "k8",
+    "seeds": [
+      20260722,
+      20260723,
+      20260724,
+      20260725,
+      20260726
+    ],
+    "total_f015": 0.2904613848,
+    "emp_stride": 128,
+    "true_nsample": 8
+  },
+  "gates": {
+    "I_df": {
+      "pass": true,
+      "d_f": 0.2904613848413424,
+      "ref": 0.2904613848,
+      "rel_err": 1.4233346025378144e-10,
+      "threshold": 0.001,
+      "ce_ds1": 2.499824880485988,
+      "ce_ds2": 2.501560232923117
+    },
+    "I_Sigma": {
+      "selected_family": null,
+      "pass": false,
+      "note": "PASS => cheapest diagonal family reproducing small-perturb sym-KL to rel<=0.25 on 3/3 probe directions; FAIL(all) => HALT at Phase 0 (D-018 reversal 1), NO tolerance loosening.",
+      "halt": true
+    }
+  },
+  "phase0": {
+    "probe_scales": {
+      "random": {
+        "scale": 0.00019618392462903144,
+        "sym_kl": 0.009470981135668013,
+        "dce": 0.005020345350251976
+      },
+      "update_last2": {
+        "scale": 0.2945384240933644,
+        "sym_kl": 0.01404863204103733,
+        "dce": 0.033740546955306705
+      },
+      "delta_T": {
+        "scale": 0.009102414482884508,
+        "sym_kl": 0.013562806262346369,
+        "dce": 0.008674515980576114
+      }
+    },
+    "family1_isigma": {
+      "family": "diag_empirical",
+      "per_direction": [
+        {
+          "direction": "random",
+          "scale": 0.00019618392462903144,
+          "sym_kl": 0.009470981135668013,
+          "pred": 0.02,
+          "rel_err": 1.1117136348925214,
+          "pass": false
+        },
+        {
+          "direction": "update_last2",
+          "scale": 0.2945384240933644,
+          "sym_kl": 0.01404863204103733,
+          "pred": 0.0032816131394801055,
+          "rel_err": 0.7664104853843267,
+          "pass": false
+        },
+        {
+          "direction": "delta_T",
+          "scale": 0.009102414482884508,
+          "sym_kl": 0.013562806262346369,
+          "pred": 0.019999999999999997,
+          "rel_err": 0.47462107864246617,
+          "pass": false
+        }
+      ],
+      "n_pass": 0,
+      "n_dir": 3,
+      "pass": false
+    },
+    "family2_isigma": {
+      "family": "block_empirical_gram",
+      "per_direction": [
+        {
+          "direction": "random",
+          "scale": 0.00019618392462903144,
+          "sym_kl": 0.009470981135668013,
+          "pred": 0.027462665586026096,
+          "rel_err": 1.8996642684252463,
+          "pass": false
+        },
+        {
+          "direction": "update_last2",
+          "scale": 0.2945384240933644,
+          "sym_kl": 0.01404863204103733,
+          "pred": 0.022578234843938713,
+          "rel_err": 0.6071482816252599,
+          "pass": false
+        },
+        {
+          "direction": "delta_T",
+          "scale": 0.009102414482884508,
+          "sym_kl": 0.013562806262346369,
+          "pred": 0.031342611831330185,
+          "rel_err": 1.3109238033094122,
+          "pass": false
+        }
+      ],
+      "n_pass": 0,
+      "n_dir": 3,
+      "pass": false
+    },
+    "full_empirical_diagnostic": {
+      "family": "full_empirical_fisher_diagnostic",
+      "per_direction": [
+        {
+          "direction": "random",
+          "scale": 0.00019618392462903144,
+          "sym_kl": 0.009470981135668013,
+          "pred": 0.02824268247919686,
+          "rel_err": 1.9820228838630063,
+          "pass": false
+        },
+        {
+          "direction": "update_last2",
+          "scale": 0.2945384240933644,
+          "sym_kl": 0.01404863204103733,
+          "pred": 0.034733412881102814,
+          "rel_err": 1.4723697495701615,
+          "pass": false
+        },
+        {
+          "direction": "delta_T",
+          "scale": 0.009102414482884508,
+          "sym_kl": 0.013562806262346369,
+          "pred": 0.029332944912880646,
+          "rel_err": 1.162748943359605,
+          "pass": false
+        }
+      ],
+      "n_pass": 0,
+      "n_dir": 3,
+      "pass": false
+    },
+    "family3_isigma": {
+      "family": "diag_true_fisher_ggn",
+      "per_direction": [
+        {
+          "direction": "random",
+          "scale": 0.00019618392462903144,
+          "sym_kl": 0.009470981135668013,
+          "pred": 0.014432732030637519,
+          "rel_err": 0.5238898508923638,
+          "pass": false
+        },
+        {
+          "direction": "update_last2",
+          "scale": 0.2945384240933644,
+          "sym_kl": 0.01404863204103733,
+          "pred": 0.002651060243818737,
+          "rel_err": 0.8112940650680615,
+          "pass": false
+        },
+        {
+          "direction": "delta_T",
+          "scale": 0.009102414482884508,
+          "sym_kl": 0.013562806262346369,
+          "pred": 0.015276114578283042,
+          "rel_err": 0.1263240278446822,
+          "pass": true
+        }
+      ],
+      "n_pass": 1,
+      "n_dir": 3,
+      "pass": false
+    }
+  },
+  "phase1": {},
+  "verdict": "E-012 HALTS at Phase 0: no estimator family passed I-Sigma. R-3 unrun under this registration; Phase 1 NOT executed (frozen rule). No tolerance loosened."
+}
