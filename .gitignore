@@ -1,2 +1,9 @@
 ﻿__pycache__/
 *.pyc
+
+# Run logs (stdout captures) are ephemeral convenience artifacts, not data of record.
+# The canonical raw data for every experiment is its results/raw/*.json (committed as a
+# data artifact). No .log has ever been tracked; keep it that way for a clean, consistent
+# results/ history. E.g. results/raw/e011b_run.log — its abort trace is already narrated
+# in findings.md F-018 and the experiment_log E-011b entry.
+*.log
