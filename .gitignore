@@ -7,3 +7,6 @@
 # results/ history. E.g. results/raw/e011b_run.log — its abort trace is already narrated
 # in findings.md F-018 and the experiment_log E-011b entry.
 *.log
+
+# E-012 Sigma_E Fisher caches (large .pt, regenerable) — never data of record.
+results/_e012_cache/
