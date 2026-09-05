@@ -5,23 +5,31 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,booktabs,graphicx,microtype}
 \usepackage[hidelinks]{hyperref}
-\title{Persistent Data-Order Effects in Language Models:\\Dynamical Traces and Limits of Recovery Probes}
+\title{Persistent Data-Order Effects Precede\\Directional Alignment in Language Models}
 \workshoptitle{DynaFront 2: Dynamics at the Frontiers of Optimization, Sampling, and Games}
+% The supplied style ignores the workshop title in its review-mode notice.
+% Correct only the venue text; retain anonymous review formatting and line numbers.
+\makeatletter
+\renewcommand{\@noticestring}{Submitted to the DynaFront 2 workshop at NeurIPS 2026. Do not distribute.}
+\makeatother
 \author{Anonymous Authors}
 \newcommand{\KL}{\operatorname{KL}}
 \newcommand{\R}{\mathbb{R}}
 \begin{document}
 \maketitle
 \begin{abstract}
-Changing training-data order changes a model's optimization trajectory, but a persistent endpoint difference need not reveal when its direction stabilizes or whether it can be corrected. We study these distinctions using public Pythia-160M checkpoints trained on 300 billion tokens. At the final checkpoint, three correlated order-only pairs have symmetric KL divergence of 0.290--0.293 nats, approximately 3.8 times an adjacent-checkpoint drift reference and 95\% of the divergence of one joint initialization-and-order pair. These comparisons use a training-distribution shard; they hold late in training and do not isolate initialization effects. Functional divergence is already substantial while the raw endpoint-difference direction remains weakly aligned. Two subsequent probes fail their declared validity criteria: most parameter-block grafts degrade language modeling beyond a frozen loss band, and no tested Fisher estimator predicts all three local perturbations within 25\% relative error. We connect these observations to a fixed-subspace correction floor and delimit what remains unmeasured: functional recoverability and the cost of changing a completed training history.
+Data order changes optimization trajectories, but endpoint divergence alone does not reveal how the corresponding trace develops or whether it is recoverable. We measure output divergence and raw parameter-space endpoint-direction alignment along public Pythia-160M/PolyPythias trajectories trained on 300 billion tokens. Three correlated order-only pairs reach symmetric KL of 0.290--0.293 nats, approximately 3.8 times a late-training adjacent-checkpoint drift reference, compared with 0.306 nats for one joint initialization-and-order pair. The central finding is a temporal dissociation: at step 16,000, the order/joint divergence ratio is already 0.932 for one pair, while its raw endpoint-direction cosine is only 0.294. These are distinct readouts, not a causal decomposition. Most parameter-block grafts then leave a predeclared language-modeling loss band, and none of the tested Fisher estimators predicts all three probe directions within 25\% relative error. The comparisons use one training-distribution shard and lack an initialization-only control. Persistent order dependence is measurable; functional recoverability and the cost of rewriting completed optimization histories remain open.
 \end{abstract}
 
 \section{Introduction}
-An optimization history is an ordered composition of update maps. Even with the same initial state and data multiset, changing the order can change the endpoint. A dynamical view asks how local order defects propagate through later updates, which aspects survive in the model's predictions, and which can be removed by a restricted correction. These are different questions: a large endpoint difference alone proves neither expensive correction nor irreversibility.
+Training is an ordered composition of update maps: identical initial states and data multisets can yield different completed histories. Endpoint distance leaves several questions separate. Does an output-level difference persist? When does its magnitude become substantial, and when does the raw parameter-space endpoint-difference direction align with its final direction? Can that trace be corrected, and can a proposed recovery probe be trusted?
 
-Public checkpoint suites make it possible to examine these distinctions without training new language models. Pythia provides trajectories across model sizes \citep{pythia}; PolyPythias varies initialization and data order \citep{polypythias}. We use their 160M-parameter runs as a controlled entry point into history dependence. Our contribution is a bounded empirical study of persistent order effects, the timing of their raw parameter direction, and the validity of two proposed recovery measurements. We do not present a successful large-scale transport operator or a general computational lower bound.
-
-Local commutator criteria already address training-order selection \citep{rukhovich,sweeney}; our target is the persistent difference between completed histories. We separate direct measurements from recovery claims and retain failed measurement gates as outcomes. Section~2 states the dynamical framework and a restricted correction floor; Sections~3--4 report the checkpoint measurements and failed probes; Section~5 bounds their interpretation.
+A scalar output divergence need not track parameter orientation: later dynamics may change a displacement's direction while preserving the scale of its effect on predictions. We examine this distinction using public Pythia and PolyPythias trajectories \citep{pythia,polypythias}, without new pretraining. Our contributions are:
+\begin{enumerate}
+\item \textbf{Temporal dissociation.} Functional divergence is near its late-training scale while the raw endpoint-difference direction remains weakly aligned: at step 16,000, the order/joint ratio is 0.932 and the cosine is 0.294 for the primary pair. Qualitative agreement across correlated pairs has pair-dependent timing.
+\item \textbf{Persistent output differences.} Three correlated order-only comparisons reach 0.290--0.293 nats at the final Pythia-160M checkpoint. These are pairwise comparisons sharing one initialization, not independent replicates.
+\item \textbf{Validity-gated recovery analysis.} The tested graft class and Fisher estimators fail declared validity criteria. Their failure prevents recovery claims, rather than establishing irreversibility.
+\end{enumerate}
 
 \newpage
 \section{Dynamical framework and measurement design}
@@ -39,18 +47,15 @@ Connect two update words by adjacent swaps. For swap $k$, let $z_k$ be the state
  \Delta_k=A_k(z_k+\delta_k)-A_k(z_k),\qquad
  x_T^{(B)}-x_T^{(A)}=\sum_k\Delta_k.
 \end{equation}
-The second identity telescopes over the intermediate words. Differentiability gives the local approximation $\Delta_k\approx DA_k(z_k)\delta_k$: later dynamics can amplify, rotate, or cancel the defect. This identity supplies a framework, not an estimator validated here at 160M scale. Checkpoint differences below are direct observations, not reconstructed per-swap attributions.
+The second identity telescopes over intermediate words with a common initial state and the same update maps. Differentiability gives $\Delta_k\approx DA_k(z_k)\delta_k$: later dynamics can amplify, attenuate, or rotate local defects, which can also cancel in the sum. Checkpoint differences below are direct observations, not reconstructed per-swap attributions. The identity does not identify when Pythia's individual order effects were generated.
 
 \paragraph{A restricted correction floor.}
-Let $\Delta\in\R^d$ be the parameter gap to a target, $S\subseteq\R^d$ a fixed linear subspace of allowed corrections, and $\Sigma\succeq0$ a fixed functional quadratic form. Define
+For a parameter gap $\Delta$, fixed linear correction subspace $S$, and fixed quadratic metric $\Sigma\succeq0$, define
 \begin{equation}
  r_S(\Delta)=\min_{c\in S}\|\Sigma^{1/2}(\Delta-c)\|_2.
  \label{eq:floor}
 \end{equation}
-\textbf{Proposition.} If every cumulative correction lies in $S$, no such correction achieves quadratic-metric error less than $r_S(\Delta)$, at any compute budget.
-\emph{Proof.} Every attainable residual is $\Delta-c$ for some $c\in S$ and hence has norm at least the minimum in Eq.~\eqref{eq:floor}. The minimum exists because $\Sigma^{1/2}S$ is a finite-dimensional linear subspace. A sequence of corrections in $S$ still sums to an element of $S$. $\square$
-
-This elementary geometric floor depends on both the access class and the metric. It is exact for the stated quadratic model, not a global theorem about nonlinear output divergence. It gives no finite-budget scaling law and does not cover corrections whose reachable span changes with the state. A useful empirical application first requires a faithful $\Sigma$; Section~4 tests that prerequisite.
+Every correction $c\in S$ has residual norm at least $r_S(\Delta)$, directly by minimization; the minimum is attained since $\Sigma^{1/2}S$ is a finite-dimensional subspace. This elementary conditional floor is neither a nonlinear irreversibility theorem nor a computational lower bound, and does not cover state-dependent reachable spaces. Section~4 tests the metric prerequisite; no functional correction floor is measured here.
 
 \paragraph{Models, metric, and controls.}
 Write $m,d_1,d_2$ for the main Pythia-160M run and its two data-seed variants. They share an initialization. We analyze $P_1=(d_1,d_2)$, $P_2=(m,d_1)$, and $P_3=(m,d_2)$; these are three correlated pairs from three runs, not three independent replicates. The joint arm $J$ uses the two full-seed variants, changing initialization and order together. The endpoint is $T=143{,}000$ updates (300B training tokens).
@@ -60,19 +65,22 @@ For next-token distributions on a frozen shard $E$, our direct readout is
  D_E(a,b)=\frac{1}{2|E|}\sum_{x\in E}
  [\KL(p_a(\cdot|x)\|p_b(\cdot|x))+\KL(p_b(\cdot|x)\|p_a(\cdot|x))].
 \end{equation}
-The shard contains 48 non-overlapping 2,048-token blocks from \texttt{NeelNanda/pile-10k}, concatenated with EOS separators using the Pythia tokenizer: 98,304 prediction positions. It samples the training distribution, not a held-out generalization benchmark. Models run in evaluation mode with float32 forward passes and float64 accumulation. We compare 12 checkpoints from step 0 to $T$, omitting step 1 after an artifact audit found initialization copies. The candidate initialization-only arm failed continuity checks and was excluded before the amended comparison. Consequently, $D_E(J)-D_E(P_i)$ cannot identify an initialization main effect.
+The shard contains 48 non-overlapping 2,048-token blocks from \texttt{NeelNanda/pile-10k}, concatenated with EOS separators using the Pythia tokenizer: 98,304 prediction positions. It samples the training distribution, not a held-out generalization benchmark. Models run in evaluation mode with float32 forward passes and float64 accumulation. We compare 12 checkpoints from step 0 to $T$, excluding step 1 after a checkpoint-integrity audit. The candidate initialization-only arm failed continuity checks and was excluded before the amended comparison; $D_E(J)-D_E(P_i)$ confounds initialization and initialization--order interaction. The amended order-only criterion is weaker than the original two-arm criterion.
+
+\paragraph{Positioning.}
+Local Lie-bracket criteria predict order effects in domain and sequential learning \citep{rukhovich,sweeney}; mode-connectivity work studies instability to training noise \citep{frankle}. Pythia/PolyPythias enable trajectory and seed comparisons \citep{pythia,polypythias}. Here the focus is direct output-distribution divergence between completed histories, its timing relative to raw endpoint-direction alignment, and probe validity before recovery claims. We claim neither novelty for order sensitivity itself nor a new general transport theorem.
 
 \newpage
-\section{Persistent output differences, later directional alignment}
+\section{Persistent functional divergence precedes directional alignment}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{dynamics.pdf}
-\caption{Recorded checkpoint measurements. Left: output divergence for one order-only pair and the joint pair; crosses are same-run drift over the labeled checkpoint windows, not statistical error bars. Right: the order/joint divergence ratio and raw endpoint-direction cosine for $P_1$. The quantities measure different objects; proximity of their numerical values has no metric interpretation. Lines connect the measured grid only.}
+\caption{\textbf{Substantial functional divergence before raw endpoint-direction alignment.} Left: $P_1$ and joint-pair output divergence; crosses mark drift over the labeled windows. Right: separate panels show $R_t=D_E(P_1,t)/D_E(J,t)$ and raw cosine $C_t$. At 16k, $R_t=0.932$ while $C_t=0.294$. Ratio and cosine measure different objects; their numerical proximity has no metric interpretation. Lines connect recorded points, not fitted dynamics; crosses are not error bars.}
 \label{fig:dynamics}
 \end{figure}
 
 \paragraph{Late-training order effects persist.}
-Table~\ref{tab:endpoint} reports the endpoint measurements. The same-run drift reference is $D_E(d_{1,142000},d_{1,143000})=0.076275$; the 160M--410M comparison is 0.460360. Each order-only pair lies between these references. The order-only maximum/minimum ratio is 1.009, below the predeclared threshold of 2.0. The approximately 1\% agreement is descriptive; it is not a confidence interval or an independently replicated population estimate.
+The final order-only divergences are 0.290--0.293 nats (Table~\ref{tab:endpoint}), compared with 0.306112 for $J$. All exceed the late adjacent-checkpoint drift reference, 0.076275, and lie below the 160M--410M comparison, 0.460360. Their maximum/minimum ratio is 1.009, below the predeclared threshold of 2.0. The approximately 1\% agreement is descriptive, not a confidence interval: each of three shared-initialization runs appears in two comparisons.
 
 \begin{table}[h]
 \centering
@@ -90,22 +98,22 @@ $J$: full-seed1 / full-seed2 & 0.306112 & 1.0000 & 4.01\\
 \end{tabular}
 \end{table}
 
-The adjacent-checkpoint ``floor'' measures training drift, not numerical noise or a statistical detection limit. It depends strongly on time and the chosen 1,000-update window: its value is 0.680225 at steps 1,000--2,000 and 0.140831 at 16,000--17,000. Early pair values therefore do not establish separation from drift. The approximately 3.8-fold comparison is specifically a late-training result. The amended experiment tested an order-only persistence criterion weaker than the original two-arm criterion; the missing initialization-only comparison remains untested.
+\paragraph{The central dissociation: magnitude precedes raw alignment.}
+For $P_1$, let $\Delta_t=\theta_{d_1,t}-\theta_{d_2,t}$ and $C_t=\langle\Delta_t,\Delta_T\rangle/(\|\Delta_t\|_2\|\Delta_T\|_2)$. At 16,000, $D_E(P_1)=0.312597$ nats, already near its final scale, while $C_t=0.294$. This statement holds in absolute KL, without the joint denominator. The ratio $R_t=D_E(P_1,t)/D_E(J,t)$ is 0.932. At 64,000, $R_t=0.943$ and $C_t=0.877$; the first sampled $C_t\geq0.9$ occurs at 128,000. The ratio is not monotone: it falls from 0.993 at 128,000 to 0.949 at $T$.
 
-\paragraph{Magnitude and direction have different timing.}
-For $P_1$, define $\Delta_t=\theta_{d_2,t}-\theta_{d_1,t}$ and $C_t=\langle\Delta_t,\Delta_T\rangle/(\|\Delta_t\|_2\|\Delta_T\|_2)$. At step 16,000, $D_E(P_1)/D_E(J)=0.932$, but $C_t=0.294$; at 64,000 these values are 0.943 and 0.877. The first sampled $C_t\geq0.9$ occurs at 128,000. The ratio is not monotone: it decreases from 0.993 at 128,000 to 0.949 at $T$.
+At 16,000, $P_2$ and $P_3$ have raw cosines 0.441 and 0.466, and both first cross 0.9 at 64,000. The same qualitative dissociation occurs in all three correlated pairs, with pair-dependent timing. \textbf{Functional divergence magnitude and raw parameter-space endpoint orientation evolve on different timescales.} This is a descriptive comparison, not a test of functional-direction lock-in. Early directions are storage-quantization limited; $C_T=1$ is an identity and nearby checkpoints correlate mechanically. Threshold-crossing times are grid-dependent, not precise stabilization times.
 
-The other correlated pairs have step-16,000 cosines 0.441 and 0.466 and cross 0.9 at 64,000. Thus the qualitative dissociation appears in all three pairs, with pair-dependent timing. Early directions are storage-quantization limited, and $C_T=1$ is an identity; nearby endpoints also correlate mechanically. These observations do not determine when a \emph{functional} direction locks in, nor when individual order defects were created. A stable scalar divergence need not imply a stable direction in output space.
+The drift reference is not a noise floor. It depends on training time and checkpoint interval: over 1,000-update windows it is 0.680225 at 1,000--2,000 and 0.140831 at 16,000--17,000. Early pair values do not establish separation from drift; the 3.8-fold comparison applies only late in training. Neither a scalar ratio nor raw cosine identifies an output-space direction or recoverability.
 
 \newpage
-\section{Two recovery probes fail their validity gates}
+\section{Recovery claims require validated probes}
 \paragraph{Parameter-type grafts leave the allowed loss region.}
-At $T$, we form hybrids by moving one parameter-type block of $d_1$ toward the corresponding block of $d_2$: $\theta_h=\theta_{d_1}+\alpha M_b(\theta_{d_2}-\theta_{d_1})$, with mask $M_b$. The frozen validity rule rejects a hybrid when its token cross-entropy exceeds the worse parent's loss by 0.5 nats, giving a threshold of 3.001560. The instrument checks passed, including reproduction of the recorded parent divergence to relative error $1.4\times10^{-10}$.
+Raw alignment does not measure recovery. At $T$, we form hybrids $\theta_h=\theta_{d_1}+\alpha M_b(\theta_{d_2}-\theta_{d_1})$, where $M_b$ selects a parameter-type block and $\alpha\in\{0.25,0.5,1\}$. The frozen rule rejects token cross-entropy above the worse parent's loss plus 0.5 nats: a threshold of 3.001560. Instrument checks passed, including parent-divergence reproduction to relative error $1.4\times10^{-10}$.
 
-Seven of eight complete block swaps are invalid. Across evaluated interpolation cells, the loss band rejects 23 of 35. Attention QKV, carrying 87\% of the squared parameter gap, is invalid at every tested nonzero interpolation strength. Only the internal LayerNorm block remains valid through a complete swap; even that hybrid is degraded and far from both parents. The frozen abort rule stops the remaining control sequence. The formal outcome is inconclusive for spatial recoverability: these hybrids establish the failure of this graft class at the tested strengths, not a proof that the order trace cannot be edited.
+Seven of eight complete block swaps are invalid. The recorded loss-band tally rejects 23 of 35 evaluated graft readouts, including control and second-anchor readouts of the same hybrids. Attention QKV, carrying 87\% of the squared parameter gap, is invalid at every tested nonzero strength. Only internal LayerNorm remains valid through a full swap; that hybrid is degraded and far from both parents. The frozen abort rule stops the remaining control sequence, leaving spatial recoverability inconclusive. \emph{Parameter-space graftability cannot be assumed to measure functional recoverability}: this graft class fails at the tested strengths, without ruling out other edits.
 
 \paragraph{Local Fisher metrics do not certify.}
-To attempt Eq.~\eqref{eq:floor} without cross-model grafts, we test $D_E(\theta,\theta+v)\approx v^\top\Sigma_Ev$, with $\Sigma_E=\tfrac12\widehat F$. For the true predictive Fisher, this is the local quadratic approximation to the half-sum KL convention above. It is not generally the observed-label loss Hessian. The empirical Fisher and predictive Fisher are distinct objects \citep{kunstner}; replacing one by the other needs validation.
+To attempt Eq.~\eqref{eq:floor} without grafts, we test $D_E(\theta,\theta+v)\approx v^\top\Sigma_Ev$, with $\Sigma_E=\tfrac12\widehat F$. The predictive Fisher gives the local quadratic approximation under our half-sum KL convention, not generally the observed-label loss Hessian. Empirical and predictive Fisher are distinct \citep{kunstner}; substitution needs validation.
 
 The frozen gate requires relative prediction error at most 0.25 on all three scaled probe directions: random, the last two checkpoints' update, and the endpoint order gap. Cross-entropy increases are 0.0050, 0.0337, and 0.0087 nats, respectively. Table~\ref{tab:fisher} reports the relative errors. No family passes; the planned projection ladder and Fisher-weighted direction timing are therefore unrun.
 
@@ -124,12 +132,12 @@ Diagonal predictive Fisher & 0.524 & 0.811 & 0.126 & 1/3\\
 \end{tabular}
 \end{table}
 
-The predictive diagonal is accurate to 13\% along the endpoint gap, yet underpredicts the update-direction KL by about 5.3 times. This direction-dependent failure is consistent with missing cross-parameter curvature. The failure pattern repeats across independent Fisher builds, while the direct divergence readout reproduces to relative error $1.42\times10^{-10}$. Small loss changes alone do not certify the asymptotic quadratic regime or uniquely identify the error source; finite perturbations and estimator sampling remain limitations. No tolerance was relaxed after seeing these results.
+The predictive diagonal has 13\% error along the endpoint gap, yet underpredicts update-direction KL by about 5.3 times. \emph{Agreement along the selected order-gap direction does not certify a local metric.} The pattern is consistent with missing cross-parameter curvature; it does not establish a unique cause. Independent builds reproduce the order-gap pass/random fail pattern, and the direct divergence readout reproduces to relative error $1.42\times10^{-10}$. Small loss changes alone do not certify the quadratic regime; finite perturbations and estimator sampling remain limitations. No tolerance was relaxed.
 
 \section{Discussion and limitations}
-Order sensitivity is established prior work; early-training instability and mode connectivity already motivate studying timing \citep{frankle}. Our extension is a direct output-divergence comparison across completed language-model histories, paired with a distinction between divergence magnitude and raw direction and explicit failures of recovery probes. The fixed-subspace result is elementary and conditional: no calibrated functional correction floor has been measured here.
+Order-only output differences persist, with substantial magnitude before raw parameter-space endpoint-direction alignment. The failed validity checks separate observing a trace from measuring its recoverability. Scalar functional divergence, raw parameter direction, functional geometry, and actual correction are distinct objects; none substitutes automatically for another.
 
-The evidence covers one model size, one shared initialization for the order-only runs, a single joint pair, and one training-distribution shard. There are no independent-seed error bars, downstream generalization results, or initialization-only control. These data cannot partition the remaining joint divergence into initialization and initialization--order interaction. Neither the failed grafts nor the failed metric establish universal irreversibility. The next useful experiment is certification of a metric carrying cross-parameter structure, with new probe criteria fixed before recovery measurements; low-rank metrics must also account for directions outside their represented subspace. Persistent order dependence is measurable here; cheap history correction remains open.
+Evidence is limited to one model size, three correlated order-only pairs sharing one initialization, one joint pair, and one training-distribution shard. Initialization-only effects and interactions cannot be isolated; independent-run statistical variation and downstream generalization are unmeasured. No universal irreversibility, successful functional transport, computational lower bound, or validity of arbitrary Fisher models follows. A next experiment should certify a metric with cross-parameter structure before projection/recovery claims, with probe criteria frozen anew. Low-rank proposals must test directions outside their represented span. Functional recoverability and cheap history correction remain open.
 
 \clearpage
 \begin{thebibliography}{9}

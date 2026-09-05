@@ -1,8 +1,8 @@
 # DynaFront 2026 workshop draft
 
-Anonymous workshop paper: four pages of main content, with references beginning on page 5. The supplied NeurIPS 2026 style is copied without modification; no font-size or margin overrides are used. `paper.tex` is the main file for Overleaf or local LaTeX.
+Anonymous workshop paper: **Persistent Data-Order Effects Precede Directional Alignment in Language Models**, revised 2026-09-05. Four pages of main content, with references beginning on page 5. The supplied NeurIPS 2026 style file is copied without modification; no font-size or margin overrides are used. `paper.tex` is the main file for Overleaf or local LaTeX. See `CHANGELOG.md`, `REVIEWER_CRITIQUE.md`, and `VALIDATION.md` for the editorial revision and its checks.
 
-Venue checked 2026-09-05: https://sites.google.com/view/dynafrontneurips26/call-for-papers recommends 4–5 pages **excluding references and supplementary material** and requires double-blind review. This supersedes the initial working assumption of four pages including references. The workshop title is set with the supplied style's `workshoptitle` command; the style itself prints a generic conference footer in review mode.
+Venue checked 2026-09-05: https://sites.google.com/view/dynafrontneurips26/call-for-papers recommends 4–5 pages **excluding references and supplementary material** and requires double-blind review. This supersedes the initial working assumption of four pages including references. The workshop title is set with `workshoptitle`. Because the supplied style prints a generic main-conference notice in review mode, the manuscript preamble overrides only that notice to name the DynaFront 2 workshop. This is review-template wording, not a claim that a submission has been made.
 
 The supplied `checklist.tex` is retained verbatim as `checklist_template.tex`, a reference template, and is **not included in the paper**. The workshop CfP/FAQ reviewed does not explicitly require it. Its main-conference instruction text is not treated as a new user request. If OpenReview requires a checklist, the author must complete the original questions before appending it; the untouched TODO template must not be submitted as a completed checklist.
 
@@ -16,7 +16,7 @@ From this directory, run `pdflatex -interaction=nonstopmode -halt-on-error paper
 - Section 3, Figure 1, Table 1: F-015/F-016/F-017 in `docs/findings.md`; `results/raw/e009_divergence_2026-07-20.json`, `e010_divergence_2026-07-22.json`, and `e011a_direction_2026-07-22.json`. Step 1 is omitted. All curve points are read directly, not refitted or remeasured.
 - Section 4, grafts: F-018; `results/raw/e011b_graft_2026-07-22.json`. The formal verdict remains inconclusive for spatial recoverability.
 - Section 4, Table 2: F-019; `results/raw/e012_recoverability_2026-07-22.json`. No estimator certified and no recovery ladder was run. Small CE changes are not presented as proof that higher-order terms vanish. The predictive Fisher is not equated with the observed-label loss Hessian.
-- External bibliography metadata checked against the linked arXiv abstract pages on 2026-09-05. This is targeted citation verification, not an exhaustive new novelty review.
+- External bibliography metadata and associated claims checked against the linked primary sources on 2026-09-05; support mapping is in `VALIDATION.md`. This is targeted citation verification, not an exhaustive new novelty review.
 
 ## Scope and remaining submission work
 
