@@ -38,7 +38,7 @@ A scalar output divergence need not track parameter orientation. Later dynamics 
 
 \section{Dynamical framework and measurement design}
 \paragraph{Transported order defects.}
-Let $x$ include parameters and any optimizer state, and let $U_i$ be one update map. The adjacent-swap defect is
+This section fixes vocabulary. None of its quantities is measured directly here. Let $x$ include parameters and any optimizer state, and let $U_i$ be one update map. The adjacent-swap defect is
 \begin{equation}
  \delta_{ij}(x)=U_j(U_i(x))-U_i(U_j(x)).
 \end{equation}
@@ -142,7 +142,7 @@ The predictive diagonal has 13\% error along the endpoint gap, yet underpredicts
 \section{Discussion and limitations}
 Order-only output differences persist, with substantial magnitude before raw parameter-space endpoint-direction alignment. The failed validity checks separate observing a trace from measuring its recoverability. Scalar functional divergence, raw parameter direction, functional geometry, and actual correction are distinct objects. None substitutes automatically for another.
 
-Evidence is limited to one model size, three correlated order-only pairs sharing one initialization, one joint pair, and one training-distribution shard. Initialization-only effects and interactions cannot be isolated. Independent-run statistical variation and downstream generalization are unmeasured. No universal irreversibility, successful functional transport, computational lower bound, or validity of arbitrary Fisher models follows. A next experiment should certify a metric with cross-parameter structure before projection or recovery claims, with probe criteria frozen anew. Low-rank proposals must test directions outside their represented span. Functional recoverability and cheap history correction remain open.
+Evidence is limited to one model size, three correlated order-only pairs sharing one initialization, one joint pair, and one training-distribution shard. Initialization-only effects and interactions cannot be isolated. Independent-run statistical variation and downstream generalization are unmeasured. Raw cosine is sensitive to parameter scale and permutation symmetries. No universal irreversibility, successful functional transport, computational lower bound, or validity of arbitrary Fisher models follows. A next experiment should certify a metric with cross-parameter structure before projection or recovery claims, with probe criteria frozen anew. Low-rank proposals must test directions outside their represented span. Functional recoverability and cheap history correction remain open.
 
 \clearpage
 \begin{thebibliography}{9}
