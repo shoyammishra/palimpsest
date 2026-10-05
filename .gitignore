@@ -10,3 +10,6 @@
 
 # E-012 Sigma_E Fisher caches (large .pt, regenerable) — never data of record.
 results/_e012_cache/
+
+# HPC access notes - never commit (public repo)
+*Sharanga*SOP*.pdf
