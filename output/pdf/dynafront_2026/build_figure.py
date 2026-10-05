@@ -10,10 +10,16 @@ ROOT = HERE.parents[2]
 RAW = ROOT / 'results' / 'raw'
 e9 = json.loads((RAW / 'e009_divergence_2026-07-20.json').read_text())
 e11 = json.loads((RAW / 'e011a_direction_2026-07-22.json').read_text())
+e13 = json.loads((RAW / 'e013a_controls_2026-10-05.json').read_text())
 steps = [4, 16, 64, 256, 512, 1000, 4000, 16000, 64000, 128000, 143000]
 p = [e9['cells'][f'P1@{t}']['sym_kl'] for t in steps]
 j = [e9['cells'][f'J1@{t}']['sym_kl'] for t in steps]
 cos = {c['t']: c['cos'] for c in e11['pairs']['P1']['curve']}
+rep = {k: {c['t']: c['cos'] for c in e11['pairs'][k]['curve']} for k in ('P2', 'P3')}
+nulls = [{c['t']: c['cos'] for c in e13['curves'][n]['curve']}
+         for n in ('J_acc', 'S_ds1', 'S_ds2', 'S_seed1', 'S_seed2')]
+null_lo = [min(n[t] for n in nulls) for t in steps]
+null_hi = [max(n[t] for n in nulls) for t in steps]
 plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 7.5,
                      'axes.spines.top': False, 'axes.spines.right': False,
                      'pdf.fonttype': 42})
@@ -36,7 +42,14 @@ left.set_ylim(-.015, .76)
 left.legend(frameon=False, fontsize=7, loc='upper left')
 ratios = [a/b for a,b in zip(p,j)]
 ratio_ax.plot(steps, ratios, 'o-', color='#176b91', ms=2.7, lw=1.3)
-cos_ax.plot(steps, [cos[t] for t in steps], 's-', color='#8060a5', ms=2.7, lw=1.3)
+cos_ax.fill_between(steps, null_lo, null_hi, color='#999999', alpha=.35, lw=0,
+                    label='Schedule nulls')
+for k in ('P2', 'P3'):
+    cos_ax.plot(steps, [rep[k][t] for t in steps], '-', color='#8060a5', lw=.7,
+                alpha=.55, label='P2, P3' if k == 'P2' else None)
+cos_ax.plot(steps, [cos[t] for t in steps], 's-', color='#8060a5', ms=2.7, lw=1.3,
+            label='P1')
+cos_ax.legend(frameon=False, fontsize=6, loc='upper left', handlelength=1.4)
 ratio_ax.set_title('B  Output-divergence ratio', loc='left', fontsize=8, weight='bold')
 cos_ax.set_title('C  Raw endpoint-direction alignment', loc='left', fontsize=8, weight='bold')
 ratio_ax.set_ylabel('$R_t$')
@@ -49,7 +62,7 @@ ratio_ax.annotate(f'16k: {ratios[steps.index(16000)]:.3f}',
                   (16000, ratios[steps.index(16000)]), xytext=(-88, -3),
                   textcoords='offset points', fontsize=8, color='#176b91',
                   arrowprops={'arrowstyle': '-', 'color': '#176b91', 'lw': .7})
-cos_ax.annotate(f'16k: {cos[16000]:.3f}', (16000, cos[16000]), xytext=(-66, 12),
+cos_ax.annotate(f'16k: {cos[16000]:.3f}', (16000, cos[16000]), xytext=(8, -12),
                 textcoords='offset points', fontsize=8, color='#8060a5',
                 arrowprops={'arrowstyle': '-', 'color': '#8060a5', 'lw': .7})
 for ax in [left, ratio_ax, cos_ax]:
